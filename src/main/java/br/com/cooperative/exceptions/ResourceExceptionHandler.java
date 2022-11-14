@@ -41,17 +41,6 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
 
-    @ExceptionHandler(NotAuthorizateException.class)
-    public final ResponseEntity<StandardError> notAuthorized(NotAuthorizateException e, HttpServletRequest request) {
-        StandardError err = new StandardError();
-        err.setTimestamp(timeStamp);
-        err.setStatus(HttpStatus.FORBIDDEN.value());
-        err.setError(MESSAGE_PROCEED);
-        err.setMessage(e.getMessage());
-        err.setPath(request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(err);
-    }
-
     @ExceptionHandler(MathOperationException.class)
     public final ResponseEntity<StandardError> mathOperationException(MathOperationException e, HttpServletRequest request) {
         StandardError err = new StandardError();

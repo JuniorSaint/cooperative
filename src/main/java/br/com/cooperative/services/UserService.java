@@ -19,23 +19,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
     @Autowired
     private UserRepository repository;
     @Autowired
@@ -45,18 +38,8 @@ public class UserService implements UserDetailsService {
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
     private Utils utils;
 
-    @Override
-    public UserDetails loadUserByUsername(String email) {
-        Optional<User> users = repository.findByEmail(email);
-        if (users.isEmpty()) {
-            throw new EntityNotFoundException("User" + CP.NOT_FOUND + " email: " + email);
-        }
-        return users.get();
-    }
 
     @Transactional
     public UserResponse save(UserRequest request) {
@@ -72,10 +55,7 @@ public class UserService implements UserDetailsService {
         if (cooperative.isEmpty()) {
             throw new EntityNotFoundException("Cooperative" + CP.NOT_FOUND + " id: " + request.getCooperative().getId());
         }
-        User userEntity = new User();
-        userEntity.setPassword(encodePassword(request.getPassword()));
-        mapper.map(request, userEntity);
-        return mapper.map(repository.save(userEntity), UserResponse.class);
+        return mapper.map(repository.save(mapper.map(request, User.class)), UserResponse.class);
     }
 
     @Transactional
@@ -102,7 +82,6 @@ public class UserService implements UserDetailsService {
         if (user.isEmpty()) {
             throw new EntityNotFoundException("User" + CP.NOT_FOUND + "id:" + request.getId());
         }
-        user.get().setPassword(encodePassword(request.getPassword()));
         User userUpdate = repository.save(user.get());
         return "The password was changed with success of the user: " + userUpdate.getEmail();
     }
@@ -136,11 +115,4 @@ public class UserService implements UserDetailsService {
         return utils.mapListIntoDtoList(response, UserResponse.class);
     }
 
-    private String encodePassword(String password) {
-        Map<String, PasswordEncoder> encoders = new HashMap<>();
-        encoders.put("pbkdf2", new Pbkdf2PasswordEncoder());
-        DelegatingPasswordEncoder passwordEncoder = new DelegatingPasswordEncoder("pbkdf2", encoders);
-        passwordEncoder.setDefaultPasswordEncoderForMatches(new Pbkdf2PasswordEncoder());
-        return passwordEncoder.encode(password);
-    }
 }

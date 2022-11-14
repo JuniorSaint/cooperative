@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -23,7 +21,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="id")
-public class User implements UserDetails,  Serializable {
+public class User implements   Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,33 +67,5 @@ public class User implements UserDetails,  Serializable {
         }
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.permissions;
-    }
 
-    @Override
-    public String getUsername() {
-        return this.userName;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.active;
-    }
 }

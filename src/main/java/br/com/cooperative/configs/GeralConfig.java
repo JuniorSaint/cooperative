@@ -8,8 +8,9 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
+import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 
  @EnableJpaRepositories(basePackages = {"br.com.cooperative.repositories"})
  @EntityScan(basePackages = {"br.com.cooperative.models.entities"})
@@ -26,18 +27,12 @@ public class GeralConfig {
         return modelMapper;
     }
 
-    //    @Bean
-//    public PasswordEncoder getPasswordEncoder() {
-//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-//        return encoder;
-//    }
+    @Primary
     @Bean
-    public FreeMarkerViewResolver freemarkerViewResolver() {
-        FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
-        resolver.setCache(true);
-        resolver.setPrefix("");
-        resolver.setSuffix(".ftlh");
-        return resolver;
+    public FreeMarkerConfigurationFactoryBean factoryBean() {
+        FreeMarkerConfigurationFactoryBean bean=new FreeMarkerConfigurationFactoryBean();
+        bean.setTemplateLoaderPath("classpath:/templates");
+        return bean;
     }
 
     @Bean
