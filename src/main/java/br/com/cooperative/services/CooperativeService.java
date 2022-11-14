@@ -77,7 +77,7 @@ public class CooperativeService {
         try {
             findById(id);
             repository.deleteById(id);
-            return "Agency bank" + DELETE_MESSAGE;
+            return "Cooperative" + DELETE_MESSAGE;
         } catch (DataIntegrityViolationException e) {
             throw new DataBaseException("Integrity violation");
         }

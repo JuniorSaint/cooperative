@@ -25,7 +25,7 @@ public class AuthService {
     @Autowired
     private UserRepository repository;
 
-    @SuppressWarnings("rawtypes")
+
     public ResponseEntity signin(AccountCredentialRequest data) {
         try {
             var email = data.getEmail();
@@ -36,7 +36,7 @@ public class AuthService {
             var user = repository.findByEmail(email);
 
             var tokenResponse = new TokenReponse();
-            if (user != null) {
+            if (user.isPresent()) {
                 tokenResponse = tokenProvider.createAccessToken(email, user.get().getRoles());
             } else {
                 throw new EntityNotFoundException("User" + CP.NOT_FOUND + " email: " + email);
@@ -47,12 +47,12 @@ public class AuthService {
         }
     }
 
-    @SuppressWarnings("rawtypes")
+
     public ResponseEntity refreshToken(String email, String refreshToken) {
         var user = repository.findByEmail(email);
 
         var tokenResponse = new TokenReponse();
-        if (user != null) {
+        if (user.isPresent()) {
             tokenResponse = tokenProvider.refreshToken(refreshToken);
         } else {
             throw new EntityNotFoundException("User" + CP.NOT_FOUND + " email: " + email);

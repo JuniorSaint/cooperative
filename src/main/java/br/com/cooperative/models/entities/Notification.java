@@ -3,9 +3,12 @@ package br.com.cooperative.models.entities;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.time.Instant;
 
 @Entity
 @Table(name = "notifications")
@@ -20,8 +23,12 @@ public class Notification implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String field;
+    @NotBlank(message = "The field body is mandatory.")
+    @Column(columnDefinition="TEXT")
+    private String body;
     private Boolean wasRead;
+    @CreationTimestamp
+    private Instant createdAt;
 
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)

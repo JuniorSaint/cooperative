@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -16,6 +17,7 @@ public class NotificationResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Long id;
-    private String field;
-    private User user;
+    private String body;
+    private Boolean wasRead;
+    private Instant createdAt;
 }

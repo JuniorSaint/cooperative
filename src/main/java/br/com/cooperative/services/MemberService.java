@@ -40,7 +40,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberResponse findById(Long id) {
         Optional<Member> response = repository.findById(id);
-        if (response.get() == null)
+        if (response.isEmpty())
             throw new EntityNotFoundException("Member" + NOT_FOUND + "id: " + id);
         return mapper.map(response.get(), MemberResponse.class);
     }
