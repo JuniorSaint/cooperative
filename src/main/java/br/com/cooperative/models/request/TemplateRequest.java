@@ -4,6 +4,7 @@ import br.com.cooperative.models.entities.Cooperative;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Builder
 @NoArgsConstructor
@@ -13,7 +14,7 @@ import java.io.Serializable;
 public class TemplateRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    private UUID id;
     private String body;
     private OnlyIdRequest cooperative;
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 60 * 60)
@@ -30,7 +31,7 @@ public class BanksController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BankResponse> update(@RequestBody @Valid BankRequest request, @PathVariable(value = "id") Long id) {
+    public ResponseEntity<BankResponse> update(@RequestBody @Valid BankRequest request, @PathVariable(value = "id") UUID id) {
         request.setId(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.saveUpdate(request));
@@ -43,13 +44,13 @@ public class BanksController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BankResponse> findById(@PathVariable(value = "id") Long id) {
+    public ResponseEntity<BankResponse> findById(@PathVariable(value = "id") UUID id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.findById(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable(value = "id") Long id) throws Exception {
+    public ResponseEntity<String> delete(@PathVariable(value = "id") UUID id) throws Exception {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(service.delete(id));
     }

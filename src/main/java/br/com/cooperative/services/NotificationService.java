@@ -25,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
 import static br.com.cooperative.configs.CP.NOT_FOUND;
@@ -71,7 +68,7 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public NotificationResponse findById(Long id) {
+    public NotificationResponse findById(UUID id) {
         Optional<Notification> response = repository.findById(id);
         if (response.isEmpty()) {
             throw new EntityNotFoundException("Notification" + NOT_FOUND + "id: " + id);
@@ -90,7 +87,7 @@ public class NotificationService {
     }
 
     @Transactional
-    public String delete(Long id) {
+    public String delete(UUID id) {
         try {
             findById(id);
             repository.deleteById(id);

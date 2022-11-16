@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "members")
@@ -29,8 +30,8 @@ public class Member extends RepresentationModel<Member> implements Serializable 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
     private String name;
     private PersonTypeEnum personType;
     @NotBlank(message = "Cpf/Cnpj is a mandatory field")

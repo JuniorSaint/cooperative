@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,7 +16,7 @@ import java.io.Serializable;
 public class ParameterResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    private UUID id;
     private Double minimumLoanValue;
     private Double maximumLoanAmount;
     private Boolean active;

@@ -16,6 +16,7 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -24,7 +25,7 @@ import java.util.Set;
 public class MemberResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    private UUID id;
     private String name;
     private PersonTypeEnum personType;
     private String cpfCnpj;

@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
 import static br.com.cooperative.configs.CP.NOT_FOUND;
@@ -42,7 +43,7 @@ public class BankService {
     }
 
     @Transactional(readOnly = true)
-    public BankResponse findById(Long id) {
+    public BankResponse findById(UUID id) {
        Optional<Bank> response = repository.findById(id);
         if (response.isEmpty())
             throw new EntityNotFoundException("Bank" + NOT_FOUND + "id: " + id);
@@ -55,7 +56,7 @@ public class BankService {
     }
 
     @Transactional
-    public String delete(Long id) {
+    public String delete(UUID id) {
         try {
             findById(id);
             repository.deleteById(id);

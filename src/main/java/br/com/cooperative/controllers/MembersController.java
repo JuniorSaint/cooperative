@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 60 * 60)
@@ -27,7 +28,7 @@ public class MembersController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MemberResponse> update(@RequestBody @Valid MemberRequest request, @PathVariable(value = "id") Long id) {
+    public ResponseEntity<MemberResponse> update(@RequestBody @Valid MemberRequest request, @PathVariable(value = "id") UUID id) {
         request.setId(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.saveUpdate(request));
@@ -40,7 +41,7 @@ public class MembersController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MemberResponse> findById(@PathVariable(value = "id") Long id) {
+    public ResponseEntity<MemberResponse> findById(@PathVariable(value = "id") UUID id) {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(service.findById(id));
     }

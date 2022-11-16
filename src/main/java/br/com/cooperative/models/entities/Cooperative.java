@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "cooperatives")
@@ -21,8 +22,8 @@ import java.util.Set;
 public class Cooperative implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
     private String name;
     private CooperativeTypeEnum cooperativeType;
     @NotBlank(message = "Cnpj is a mandatory field")

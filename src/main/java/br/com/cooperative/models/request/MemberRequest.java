@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.UUID;
 
 @NoArgsConstructor
 @Getter
@@ -27,7 +28,7 @@ import java.util.Set;
 public class MemberRequest  implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    private UUID id;
     private String name;
     private PersonTypeEnum personType;
     private String cpfCnpj;

@@ -8,8 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Repository
-public interface AgencyBankRepository extends JpaRepository<AgencyBank, Long> {
+public interface AgencyBankRepository extends JpaRepository<AgencyBank, UUID> {
 
     @Query("SELECT DISTINCT obj FROM AgencyBank obj WHERE " +
             " LOWER(obj.agency) LIKE LOWER(CONCAT('%', :search, '%')) " +

@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "notifications")
@@ -21,8 +22,8 @@ public class Notification implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
     @NotBlank(message = "The field body is mandatory.")
     @Column(columnDefinition="TEXT")
     private String body;

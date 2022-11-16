@@ -7,23 +7,25 @@ import br.com.cooperative.exceptions.DataBaseException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.UserResponse;
 import br.com.cooperative.models.entities.Cooperative;
-import br.com.cooperative.models.entities.Permission;
+import br.com.cooperative.models.entities.Role;
 import br.com.cooperative.models.entities.User;
 import br.com.cooperative.models.request.ChangePasswordRequest;
 import br.com.cooperative.models.request.UserRequest;
 import br.com.cooperative.repositories.CooperativeRepository;
-import br.com.cooperative.repositories.PermissionRepository;
+import br.com.cooperative.repositories.RoleRepository;
 import br.com.cooperative.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
 
@@ -34,11 +36,13 @@ public class UserService {
     @Autowired
     private CooperativeRepository cooperativeRepository;
     @Autowired
-    private PermissionRepository permissionRepository;
+    private RoleRepository permissionRepository;
     @Autowired
     private ModelMapper mapper;
     @Autowired
     private Utils utils;
+    @Autowired
+    public PasswordEncoder passwordEncoder;
 
 
     @Transactional
@@ -55,7 +59,9 @@ public class UserService {
         if (cooperative.isEmpty()) {
             throw new EntityNotFoundException("Cooperative" + CP.NOT_FOUND + " id: " + request.getCooperative().getId());
         }
-        return mapper.map(repository.save(mapper.map(request, User.class)), UserResponse.class);
+        User  user = mapper.map(request, User.class);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        return mapper.map(repository.save(user), UserResponse.class);
     }
 
     @Transactional
@@ -82,12 +88,13 @@ public class UserService {
         if (user.isEmpty()) {
             throw new EntityNotFoundException("User" + CP.NOT_FOUND + "id:" + request.getId());
         }
+        user.get().setPassword(passwordEncoder.encode(request.getPassword()));
         User userUpdate = repository.save(user.get());
         return "The password was changed with success of the user: " + userUpdate.getEmail();
     }
 
     @Transactional
-    public String delete(Long id) {
+    public String delete(UUID id) {
         try {
             findById(id);
             repository.deleteById(id);
@@ -97,7 +104,7 @@ public class UserService {
         }
     }
 
-    public UserResponse findById(Long id) {
+    public UserResponse findById(UUID id) {
         Optional<User> response = repository.findById(id);
         if (response.isEmpty()) {
             throw new EntityNotFoundException("User" + CP.NOT_FOUND + " id:" + id);
@@ -106,8 +113,8 @@ public class UserService {
     }
 
     public Page<UserResponse> findAllWithPageAndSearch(String search, Pageable pageable) {
-        List<Permission> permissions = (search.isBlank()) ? null : permissionRepository.findAllByDescription(search.trim());
-        return utils.mapEntityPageIntoDtoPage(repository.findBySearch(search.trim(), permissions, pageable), UserResponse.class);
+        List<Role> role = (search.isBlank()) ? null : permissionRepository.findAllByRole(search.trim());
+        return utils.mapEntityPageIntoDtoPage(repository.findBySearch(search.trim(), role, pageable), UserResponse.class);
     }
 
     public List<UserResponse> findAllListed() {

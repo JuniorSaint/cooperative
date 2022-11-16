@@ -3,6 +3,7 @@ package br.com.cooperative.models.request;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Builder
 @NoArgsConstructor
@@ -11,7 +12,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class AddressRequest implements Serializable {
     private static final long serialVersionUID = 1L;
-    private Long id;
+    private UUID id;
     private String street;
     private String number;
     private String district;

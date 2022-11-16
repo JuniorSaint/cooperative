@@ -6,14 +6,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PermissionResponse implements Serializable {
+public class RoleResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Long id;
-    private String description;
+    private UUID id;
+    private Set<String> roles;
 }

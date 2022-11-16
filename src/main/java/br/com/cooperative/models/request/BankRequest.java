@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.io.Serializable;
 import java.util.Set;
+import java.util.UUID;
 
 @NoArgsConstructor
 @Getter
@@ -19,7 +20,7 @@ public class BankRequest implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
     private String code;
     private String ispb;
     private String cnpj;

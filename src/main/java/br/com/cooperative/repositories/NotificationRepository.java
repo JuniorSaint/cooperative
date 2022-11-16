@@ -10,10 +10,11 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.UUID;
 
 
 @Repository
-public interface NotificationRepository extends JpaRepository<Notification, Long> {
+public interface NotificationRepository extends JpaRepository<Notification, UUID> {
 
     @Query(value = "SELECT obj FROM Notification obj WHERE " +
             "obj.user.id = :idUser  AND " +

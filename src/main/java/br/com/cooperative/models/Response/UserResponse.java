@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -16,11 +18,11 @@ import java.util.List;
 public class UserResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    private UUID id;
     private String userName;
     private String email;
     private Boolean active;
     private String cpf;
-    private List<PermissionResponse> permissions;
+    private Set<RoleResponse> roles;
     private CooperativeResponse cooperative;
 }

@@ -6,6 +6,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.UUID;
 
 @Entity
 @Table(name = "parameters")
@@ -17,8 +18,8 @@ import java.io.Serializable;
 public class Parameter implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
     private Double minimumLoanValue;
     private Double maximumLoanAmount;
     private Boolean active;

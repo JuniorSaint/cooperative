@@ -6,9 +6,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface BankRepository extends JpaRepository<Bank, Long> {
+public interface BankRepository extends JpaRepository<Bank, UUID> {
 
     List<Bank> findAllByCode(String search);
 }

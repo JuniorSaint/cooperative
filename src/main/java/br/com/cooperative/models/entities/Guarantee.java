@@ -7,6 +7,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "guarantees")
@@ -19,8 +20,8 @@ public class Guarantee implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
     @Column(columnDefinition = "TEXT")
     private String description;
     private Double value;

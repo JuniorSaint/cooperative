@@ -15,6 +15,7 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 60 * 60)
@@ -39,13 +40,13 @@ public class NotificationsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<NotificationResponse> findById(@PathVariable(value = "id") Long id) {
+    public ResponseEntity<NotificationResponse> findById(@PathVariable(value = "id") UUID id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.findById(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable(value = "id") Long id) {
+    public ResponseEntity<String> delete(@PathVariable(value = "id") UUID id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.delete(id));
     }

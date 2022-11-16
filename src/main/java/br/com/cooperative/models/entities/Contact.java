@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.UUID;
 
 @Builder
 @Entity
@@ -17,8 +18,8 @@ import java.io.Serializable;
 public class Contact implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
     private String name;
     private String phone;
     private String email;

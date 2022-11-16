@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -14,7 +15,7 @@ import java.io.Serializable;
 public class GuaranteeResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    private UUID id;
     private String description;
     private Double value;
 }

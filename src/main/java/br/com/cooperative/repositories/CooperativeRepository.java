@@ -13,9 +13,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface CooperativeRepository extends JpaRepository<Cooperative, Long> {
+public interface CooperativeRepository extends JpaRepository<Cooperative, UUID> {
 
     @Query("SELECT DISTINCT obj FROM Cooperative obj WHERE " +
             " LOWER(obj.name) LIKE LOWER(CONCAT('%', :search, '%')) " +

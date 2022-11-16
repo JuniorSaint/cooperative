@@ -1,12 +1,9 @@
 package br.com.cooperative.controllers;
 
-import br.com.cooperative.models.Response.AgencyBankResponse;
 import br.com.cooperative.models.Response.CooperativeResponse;
-import br.com.cooperative.models.Response.MemberResponse;
 import br.com.cooperative.models.request.CooperativeRequest;
 import br.com.cooperative.services.CooperativeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 
 @RestController
@@ -33,7 +31,7 @@ public class CooperativesController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CooperativeResponse> update(@RequestBody @Valid @NotNull CooperativeRequest request, @PathVariable(value = "id") Long id) {
+    public ResponseEntity<CooperativeResponse> update(@RequestBody @Valid CooperativeRequest request, @PathVariable(value = "id") UUID id) {
         request.setId(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.saveUpdate(request));
@@ -46,13 +44,13 @@ public class CooperativesController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CooperativeResponse> findById(@PathVariable(value = "id") Long id) {
+    public ResponseEntity<CooperativeResponse> findById(@PathVariable(value = "id") UUID id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.findById(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable(value = "id") Long id) {
+    public ResponseEntity<String> delete(@PathVariable(value = "id") UUID id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.delete(id));
     }

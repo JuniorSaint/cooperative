@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 60 * 60)
@@ -30,7 +31,7 @@ public class AgenciesBanksController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AgencyBankResponse> update(@RequestBody @Valid AgencyBankRequest request, @PathVariable(value = "id") Long id) {
+    public ResponseEntity<AgencyBankResponse> update(@RequestBody @Valid AgencyBankRequest request, @PathVariable(value = "id") UUID id) {
         request.setId(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.saveUpdate(request));
@@ -43,13 +44,13 @@ public class AgenciesBanksController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AgencyBankResponse> findById(@PathVariable(value = "id") Long id) {
+    public ResponseEntity<AgencyBankResponse> findById(@PathVariable(value = "id") UUID id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.findById(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable(value = "id") Long id) {
+    public ResponseEntity<String> delete(@PathVariable(value = "id") UUID id) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(service.delete(id));
     }

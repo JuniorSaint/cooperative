@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
 import static br.com.cooperative.configs.CP.NOT_FOUND;
@@ -38,7 +39,7 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberResponse findById(Long id) {
+    public MemberResponse findById(UUID id) {
         Optional<Member> response = repository.findById(id);
         if (response.isEmpty())
             throw new EntityNotFoundException("Member" + NOT_FOUND + "id: " + id);
@@ -51,7 +52,7 @@ public class MemberService {
     }
 
     @Transactional
-    public String delete(Long id) {
+    public String delete(UUID id) {
         try {
             findById(id);
             repository.deleteById(id);

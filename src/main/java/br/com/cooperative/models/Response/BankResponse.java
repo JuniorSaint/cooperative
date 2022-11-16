@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -14,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class BankResponse implements Serializable {
 
-    private Long id;
+    private UUID id;
     private String code;
     private String ispb;
     private String cnpj;
