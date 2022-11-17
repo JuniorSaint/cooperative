@@ -8,13 +8,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Builder
@@ -47,9 +45,7 @@ public class User implements UserDetails,  Serializable {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = {@JoinColumn(name = "id_user")},
     inverseJoinColumns = {@JoinColumn(name = "id_role")})
-    private Set<Role> roles;
-
-
+    private List<Role> roles;
 
     @ManyToOne
     @JoinColumn(name="cooperative_id", nullable=false)

@@ -23,6 +23,6 @@ public class UserResponse implements Serializable {
     private String email;
     private Boolean active;
     private String cpf;
-    private Set<RoleResponse> roles;
+    private List<RoleResponse> roles;
     private CooperativeResponse cooperative;
 }

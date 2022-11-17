@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +32,7 @@ import java.util.UUID;
 import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository repository;
     @Autowired
@@ -43,6 +45,16 @@ public class UserService {
     private Utils utils;
     @Autowired
     public PasswordEncoder passwordEncoder;
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(String email) {
+        Optional<User> user = repository.findByEmail(email);
+        if (user.isEmpty()) {
+            throw new EntityNotFoundException("User " + CP.NOT_FOUND + " email: " + email);
+        }
+        return mapper.map(user.get(), UserDetails.class);
+    }
 
 
     @Transactional
@@ -59,7 +71,7 @@ public class UserService {
         if (cooperative.isEmpty()) {
             throw new EntityNotFoundException("Cooperative" + CP.NOT_FOUND + " id: " + request.getCooperative().getId());
         }
-        User  user = mapper.map(request, User.class);
+        User user = mapper.map(request, User.class);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         return mapper.map(repository.save(user), UserResponse.class);
     }

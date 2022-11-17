@@ -29,6 +29,11 @@ public class GeralConfig {
         return modelMapper;
     }
 
+     @Bean
+     public PasswordEncoder encoder() {
+         return new BCryptPasswordEncoder();
+     }
+
     @Primary
     @Bean
     public FreeMarkerConfigurationFactoryBean factoryBean() {

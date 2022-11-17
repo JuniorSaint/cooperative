@@ -95,4 +95,14 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
         err.setPath(request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
+    @ExceptionHandler(NotAuthorizateException.class)
+    public final ResponseEntity<StandardError> dataBaseException(NotAuthorizateException e, HttpServletRequest request) {
+        StandardError err = new StandardError();
+        err.setTimestamp(timeStamp);
+        err.setStatus(HttpStatus.FORBIDDEN.value());
+        err.setError("Forbidden to access");
+        err.setMessage(e.getMessage());
+        err.setPath(request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+    }
 }
