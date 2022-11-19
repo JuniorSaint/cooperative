@@ -45,8 +45,8 @@ public class UsersController {
                 .body(service.save(request));
     }
 
-    @DeleteMapping
-    public ResponseEntity<String> delete(@RequestParam UUID id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable(value = "id") UUID id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.delete(id));
     }
