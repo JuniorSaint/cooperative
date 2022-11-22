@@ -1,7 +1,6 @@
 package br.com.cooperative.services;
 
 import br.com.cooperative.configs.Utils;
-import br.com.cooperative.exceptions.DataBaseException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.MemberResponse;
 import br.com.cooperative.models.entities.Member;
@@ -9,7 +8,6 @@ import br.com.cooperative.models.request.MemberRequest;
 import br.com.cooperative.repositories.MemberRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,12 +51,8 @@ public class MemberService {
 
     @Transactional
     public String delete(UUID id) {
-        try {
-            findById(id);
-            repository.deleteById(id);
-            return "Member" + DELETE_MESSAGE;
-        } catch (DataIntegrityViolationException e) {
-            throw new DataBaseException("Integrity violation");
-        }
+        findById(id);
+        repository.deleteById(id);
+        return "Member" + DELETE_MESSAGE;
     }
 }

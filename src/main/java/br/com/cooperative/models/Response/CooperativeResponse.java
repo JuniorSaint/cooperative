@@ -1,9 +1,11 @@
 package br.com.cooperative.models.Response;
 
-import br.com.cooperative.models.entities.Address;
-import br.com.cooperative.models.entities.Contact;
 import br.com.cooperative.models.enums.CooperativeTypeEnum;
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -13,6 +15,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
+@JsonPropertyOrder({"id", "name", "cnpj", "cooperativeType", "address", "contact", "agencyBanks", "matrix"})
 public class CooperativeResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 

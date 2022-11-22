@@ -9,9 +9,9 @@ import java.util.UUID;
 
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
 public class UserRequest implements  Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -21,6 +21,7 @@ public class UserRequest implements  Serializable {
     private String password;
     private Boolean active;
     private String cpf;
+//    private LocalDate birthday;
     private List<RoleRequest> roles;
     private OnlyIdRequest cooperative;
 }

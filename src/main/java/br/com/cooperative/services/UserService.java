@@ -3,7 +3,6 @@ package br.com.cooperative.services;
 import br.com.cooperative.configs.CP;
 import br.com.cooperative.configs.Utils;
 import br.com.cooperative.exceptions.BadRequestException;
-import br.com.cooperative.exceptions.DataBaseException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.UserResponse;
 import br.com.cooperative.models.entities.Cooperative;
@@ -16,7 +15,6 @@ import br.com.cooperative.repositories.RoleRepository;
 import br.com.cooperative.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -73,7 +71,8 @@ public class UserService implements UserDetailsService {
         }
         User user = mapper.map(request, User.class);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        return mapper.map(repository.save(user), UserResponse.class);
+        UserResponse result =  mapper.map(repository.save(user), UserResponse.class);
+        return result;
     }
 
     @Transactional
@@ -92,7 +91,8 @@ public class UserService implements UserDetailsService {
         User userEntity = new User();
         mapper.map(request, userEntity);
         userEntity.setPassword(searchForUser.get().getPassword());
-        return mapper.map(repository.save(userEntity), UserResponse.class);
+        UserResponse result = mapper.map(repository.save(userEntity), UserResponse.class);
+        return result;
     }
 
     public String changePassword(ChangePasswordRequest request) {
@@ -107,13 +107,9 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public String delete(UUID id) {
-        try {
             findById(id);
             repository.deleteById(id);
             return "User" + DELETE_MESSAGE;
-        } catch (DataIntegrityViolationException e) {
-            throw new DataBaseException("Integrity violation");
-        }
     }
 
     public UserResponse findById(UUID id) {
@@ -121,17 +117,18 @@ public class UserService implements UserDetailsService {
         if (response.isEmpty()) {
             throw new EntityNotFoundException("User" + CP.NOT_FOUND + " id:" + id);
         }
-        return mapper.map(response.get(), UserResponse.class);
+        UserResponse result = mapper.map(response.get(), UserResponse.class);
+        return result;
     }
 
     public Page<UserResponse> findAllWithPageAndSearch(String search, Pageable pageable) {
         List<Role> role = (search.isBlank()) ? null : permissionRepository.findAllByRole(search.trim());
-        return utils.mapEntityPageIntoDtoPage(repository.findBySearch(search.trim(), role, pageable), UserResponse.class);
+       return  utils.mapEntityPageIntoDtoPage(repository.findBySearch(search.trim(), role, pageable), UserResponse.class);
     }
 
     public List<UserResponse> findAllListed() {
         List<User> response = repository.findAll();
-        return utils.mapListIntoDtoList(response, UserResponse.class);
+        return   utils.mapListIntoDtoList(response, UserResponse.class);
     }
 
 }

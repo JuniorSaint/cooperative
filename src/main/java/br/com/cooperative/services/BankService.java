@@ -1,20 +1,13 @@
 package br.com.cooperative.services;
 
 import br.com.cooperative.configs.Utils;
-import br.com.cooperative.exceptions.BadRequestException;
-import br.com.cooperative.exceptions.DataBaseException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
-import br.com.cooperative.models.Response.AgencyBankResponse;
 import br.com.cooperative.models.Response.BankResponse;
-import br.com.cooperative.models.entities.AgencyBank;
 import br.com.cooperative.models.entities.Bank;
-import br.com.cooperative.models.request.AgencyBankRequest;
 import br.com.cooperative.models.request.BankRequest;
-import br.com.cooperative.repositories.AgencyBankRepository;
 import br.com.cooperative.repositories.BankRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +37,7 @@ public class BankService {
 
     @Transactional(readOnly = true)
     public BankResponse findById(UUID id) {
-       Optional<Bank> response = repository.findById(id);
+        Optional<Bank> response = repository.findById(id);
         if (response.isEmpty())
             throw new EntityNotFoundException("Bank" + NOT_FOUND + "id: " + id);
         return mapper.map(response.get(), BankResponse.class);
@@ -57,12 +50,8 @@ public class BankService {
 
     @Transactional
     public String delete(UUID id) {
-        try {
-            findById(id);
-            repository.deleteById(id);
-            return "Bank" + DELETE_MESSAGE;
-        } catch (DataIntegrityViolationException e) {
-            throw new DataBaseException("Integrity violation");
-        }
+        findById(id);
+        repository.deleteById(id);
+        return "Bank" + DELETE_MESSAGE;
     }
 }

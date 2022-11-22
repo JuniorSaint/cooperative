@@ -2,7 +2,6 @@ package br.com.cooperative.services;
 
 import br.com.cooperative.configs.Utils;
 import br.com.cooperative.exceptions.BadRequestException;
-import br.com.cooperative.exceptions.DataBaseException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.AgencyBankResponse;
 import br.com.cooperative.models.entities.AgencyBank;
@@ -12,7 +11,6 @@ import br.com.cooperative.repositories.AgencyBankRepository;
 import br.com.cooperative.repositories.BankRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -69,6 +67,7 @@ public class AgencyBankService {
     public List<AgencyBankResponse> findAll() {
         return utils.mapListIntoDtoList(repository.findAll(), AgencyBankResponse.class);
     }
+
     @Transactional(readOnly = true)
     public Page<AgencyBankResponse> findAllWithPageAndSearch(String search, Pageable pageable) {
         return utils.mapEntityPageIntoDtoPage(repository.findBySearch(search.trim(), pageable), AgencyBankResponse.class);
@@ -76,12 +75,8 @@ public class AgencyBankService {
 
     @Transactional
     public String delete(UUID id) {
-        try {
-            findById(id);
-            repository.deleteById(id);
-            return "Agency bank" + DELETE_MESSAGE;
-        } catch (DataIntegrityViolationException e) {
-            throw new DataBaseException("Integrity violation");
-        }
+        findById(id);
+        repository.deleteById(id);
+        return "Agency bank" + DELETE_MESSAGE;
     }
 }

@@ -17,7 +17,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.httpBasic();
-        http.authorizeRequests().anyRequest().authenticated();
+        http.authorizeRequests().anyRequest().permitAll();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.exceptionHandling()
                 .accessDeniedHandler((request, response, accessDeniedException) -> {

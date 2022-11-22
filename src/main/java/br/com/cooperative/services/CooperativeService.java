@@ -2,16 +2,13 @@ package br.com.cooperative.services;
 
 import br.com.cooperative.configs.Utils;
 import br.com.cooperative.exceptions.BadRequestException;
-import br.com.cooperative.exceptions.DataBaseException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
-import br.com.cooperative.models.Response.AgencyBankResponse;
 import br.com.cooperative.models.Response.CooperativeResponse;
 import br.com.cooperative.models.entities.Cooperative;
 import br.com.cooperative.models.request.CooperativeRequest;
 import br.com.cooperative.repositories.CooperativeRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -75,12 +72,8 @@ public class CooperativeService {
 
     @Transactional
     public String delete(UUID id) {
-        try {
-            findById(id);
-            repository.deleteById(id);
-            return "Cooperative" + DELETE_MESSAGE;
-        } catch (DataIntegrityViolationException e) {
-            throw new DataBaseException("Integrity violation");
-        }
+        findById(id);
+        repository.deleteById(id);
+        return "Cooperative" + DELETE_MESSAGE;
     }
 }

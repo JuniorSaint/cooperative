@@ -1,24 +1,16 @@
 package br.com.cooperative.services;
 
 import br.com.cooperative.configs.Utils;
-import br.com.cooperative.exceptions.BadRequestException;
-import br.com.cooperative.exceptions.DataBaseException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
-import br.com.cooperative.models.Response.AgencyBankResponse;
 import br.com.cooperative.models.Response.MailResponse;
 import br.com.cooperative.models.Response.NotificationResponse;
 import br.com.cooperative.models.Response.UserResponse;
-import br.com.cooperative.models.entities.AgencyBank;
-import br.com.cooperative.models.entities.Bank;
 import br.com.cooperative.models.entities.Notification;
-import br.com.cooperative.models.entities.User;
-import br.com.cooperative.models.request.AgencyBankRequest;
 import br.com.cooperative.models.request.MailRequest;
 import br.com.cooperative.models.request.NotificationRequest;
 import br.com.cooperative.repositories.NotificationRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -49,7 +41,7 @@ public class NotificationService {
 
     @Transactional
     public NotificationResponse save(NotificationRequest request) {
-       NotificationResponse response =  mapper.map(repository.save(mapper.map(request, Notification.class)), NotificationResponse.class);
+        NotificationResponse response = mapper.map(repository.save(mapper.map(request, Notification.class)), NotificationResponse.class);
         UserResponse user = userService.findById(request.getUser().getId());
         var mailRequest = new MailRequest();
         mailRequest.setName(user.getUserName());
@@ -88,12 +80,8 @@ public class NotificationService {
 
     @Transactional
     public String delete(UUID id) {
-        try {
-            findById(id);
-            repository.deleteById(id);
-            return "Notification" + DELETE_MESSAGE;
-        } catch (DataIntegrityViolationException e) {
-            throw new DataBaseException("Integrity violation");
-        }
+        findById(id);
+        repository.deleteById(id);
+        return "Notification" + DELETE_MESSAGE;
     }
 }

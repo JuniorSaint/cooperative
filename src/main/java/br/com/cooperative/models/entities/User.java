@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -19,9 +20,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
 @JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="id")
 public class User implements UserDetails,  Serializable {
     private static final long serialVersionUID = 1L;
@@ -32,12 +33,15 @@ public class User implements UserDetails,  Serializable {
     @Column(unique = true)
     private String email;
     private String password;
+    private LocalDate birthday;
     private Boolean active;
     private String cpf;
     @CreationTimestamp
     private Instant createdAt;
     @UpdateTimestamp
     private Instant updatedAt;
+    @Transient
+    private Integer age;
 
     @OneToMany(mappedBy="user")
     private List<Notification> notifications;
