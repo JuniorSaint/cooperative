@@ -1,7 +1,6 @@
 package br.com.cooperative.models.entities;
 
 import br.com.cooperative.models.enums.CooperativeTypeEnum;
-import br.com.cooperative.models.enums.PersonTypeEnum;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
@@ -18,6 +17,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Cooperative implements Serializable {
     private static final long serialVersionUID = 1L;

@@ -21,7 +21,6 @@ public class UserRequest implements  Serializable {
     private String password;
     private Boolean active;
     private String cpf;
-//    private LocalDate birthday;
     private List<RoleRequest> roles;
     private OnlyIdRequest cooperative;
 }

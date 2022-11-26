@@ -65,14 +65,10 @@ public class UserService implements UserDetailsService {
         if (request.getCooperative() == null) {
             throw new BadRequestException("Cooperative not informed, it's not allowed user without a cooperative");
         }
-        Optional<Cooperative> cooperative = cooperativeRepository.findById(request.getCooperative().getId());
-        if (cooperative.isEmpty()) {
-            throw new EntityNotFoundException("Cooperative" + CP.NOT_FOUND + " id: " + request.getCooperative().getId());
-        }
-        User user = mapper.map(request, User.class);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        UserResponse result =  mapper.map(repository.save(user), UserResponse.class);
-        return result;
+        findCooperativebyId(request.getCooperative().getId());
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
+        User user = repository.save(mapper.map(request, User.class));
+        return mapper.map(user, UserResponse.class);
     }
 
     @Transactional
@@ -84,10 +80,7 @@ public class UserService implements UserDetailsService {
         if (request.getCooperative() == null) {
             throw new BadRequestException("Cooperative not informed, it's not allowed user without a cooperative");
         }
-        Optional<Cooperative> cooperative = cooperativeRepository.findById(request.getCooperative().getId());
-        if (cooperative.isEmpty()) {
-            throw new EntityNotFoundException("Cooperative" + CP.NOT_FOUND + " id: " + request.getCooperative().getId());
-        }
+        findCooperativebyId(request.getCooperative().getId());
         User userEntity = new User();
         mapper.map(request, userEntity);
         userEntity.setPassword(searchForUser.get().getPassword());
@@ -96,20 +89,18 @@ public class UserService implements UserDetailsService {
     }
 
     public String changePassword(ChangePasswordRequest request) {
-        Optional<User> user = repository.findById(request.getId());
-        if (user.isEmpty()) {
-            throw new EntityNotFoundException("User" + CP.NOT_FOUND + "id:" + request.getId());
-        }
-        user.get().setPassword(passwordEncoder.encode(request.getPassword()));
-        User userUpdate = repository.save(user.get());
-        return "The password was changed with success of the user: " + userUpdate.getEmail();
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
+        User user = mapper.map(findById(request.getId()), User.class);
+        user.setPassword(request.getPassword());
+        repository.save(user);
+        return "The password was changed with success of the user: " + user.getEmail();
     }
 
     @Transactional
     public String delete(UUID id) {
-            findById(id);
-            repository.deleteById(id);
-            return "User" + DELETE_MESSAGE;
+        findById(id);
+        repository.deleteById(id);
+        return "User" + DELETE_MESSAGE;
     }
 
     public UserResponse findById(UUID id) {
@@ -123,12 +114,19 @@ public class UserService implements UserDetailsService {
 
     public Page<UserResponse> findAllWithPageAndSearch(String search, Pageable pageable) {
         List<Role> role = (search.isBlank()) ? null : permissionRepository.findAllByRole(search.trim());
-       return  utils.mapEntityPageIntoDtoPage(repository.findBySearch(search.trim(), role, pageable), UserResponse.class);
+        return utils.mapEntityPageIntoDtoPage(repository.findBySearch(search.trim(), role, pageable), UserResponse.class);
     }
 
     public List<UserResponse> findAllListed() {
         List<User> response = repository.findAll();
-        return   utils.mapListIntoDtoList(response, UserResponse.class);
+        return utils.mapListIntoDtoList(response, UserResponse.class);
     }
 
+    private Cooperative findCooperativebyId(UUID id) {
+        Optional<Cooperative> cooperative = cooperativeRepository.findById(id);
+        if (cooperative.isEmpty()) {
+            throw new EntityNotFoundException("Cooperative" + CP.NOT_FOUND + " id: " + id);
+        }
+        return cooperative.get();
+    }
 }

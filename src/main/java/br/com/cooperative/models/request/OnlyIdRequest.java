@@ -9,6 +9,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 public class OnlyIdRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 

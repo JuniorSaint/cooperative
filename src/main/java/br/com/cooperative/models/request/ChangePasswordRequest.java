@@ -8,6 +8,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
 public class ChangePasswordRequest {
     private UUID id;
     private String password;

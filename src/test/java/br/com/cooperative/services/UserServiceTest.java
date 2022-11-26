@@ -6,33 +6,35 @@ import br.com.cooperative.models.Response.UserResponse;
 import br.com.cooperative.models.entities.Cooperative;
 import br.com.cooperative.models.entities.Role;
 import br.com.cooperative.models.entities.User;
-import br.com.cooperative.models.request.OnlyIdRequest;
-import br.com.cooperative.models.request.RoleRequest;
+import br.com.cooperative.models.request.ChangePasswordRequest;
 import br.com.cooperative.models.request.UserRequest;
 import br.com.cooperative.repositories.CooperativeRepository;
 import br.com.cooperative.repositories.RoleRepository;
 import br.com.cooperative.repositories.UserRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
+import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
+import static br.com.cooperative.mock.EntitiesMock.*;
+import static org.mockito.Mockito.*;
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
     @InjectMocks
     UserService service;
@@ -48,104 +50,129 @@ class UserServiceTest {
     private Utils utils;
     @Mock
     private PasswordEncoder passwordEncoder;
-
     private UserRequest userRequest;
     private UserResponse userResponse;
+    private Cooperative cooperative;
+    private ChangePasswordRequest changePasswordRequest;
     private User user;
-
-
-    private UUID existId;
-    private UUID noExistId;
-    private UUID dependencyId;
-    private UUID idCooperative;
-
+    private PageImpl<User> userPage;
 
     @BeforeEach
     void setUp() {
-        startUser();
-        Mockito.doNothing().when(repository).deleteById(dependencyId);
+        user = USER;
+        userRequest = USER_REQUEST;
+        userResponse = USER_RESPONSE;
+        cooperative = COOPERATIVE;
+        changePasswordRequest = CHANGE_PASSWORD_REQUEST;
+        userPage = new PageImpl<>(List.of(user));
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Should return user in loadUserByUsername with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void loadUserByUsername() {
+        when(repository.findByEmail(any())).thenReturn(Optional.of(user));
+        UserDetails response = service.loadUserByUsername(any());
+        verify(repository, times(1)).findByEmail(any());
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Should throw in loadUserByUsername EntityNotFoundException")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void loadUserByUsernameShouldThrowEntityNotFoundException() {
+        when(repository.findByEmail(any())).thenReturn(Optional.empty());
+        Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            service.loadUserByUsername(any());
+        });
+        verify(repository, times(1)).findByEmail(any());
+    }
+
+    @Test
+    @DisplayName("Should save a user with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void save() {
+        when(cooperativeRepository.findById(any())).thenReturn(Optional.ofNullable(cooperative));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        when(repository.save(any())).thenReturn(any());
+        UserResponse response = service.save(userRequest);
+        verify(repository, times(1)).save(any());
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Should throw BadRequestException when email already exist")
     @EnabledForJreRange(min = JRE.JAVA_17)
-    void update() {
+    void saveShouldThrowExceptionIfEmailExist() {
+
+
+    }
+
+
+    @Test
+    @DisplayName("Update Should Throw Exception When Cooperative Is Empty")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void updateShouldThrowExceptionWhenCooperativeIsEmpty() {
+        Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            service.update(userRequest);
+        });
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Should change password with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void changePassword() {
+
     }
 
+
     @Test
-    @DisplayName("")
+    @DisplayName("Should delete user with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void delete() {
-    }
+        when(repository.findById(any())).thenReturn(Optional.of(user));
+        Assertions.assertEquals("User" + DELETE_MESSAGE, service.delete(any()), "User" + DELETE_MESSAGE);
+        verify(repository, times(1)).deleteById(any());
 
-    @Test
-    @DisplayName("Delete should throw EntityNotFoundException")
-    @EnabledForJreRange(min = JRE.JAVA_17)
-    void deleteDataIntegrityViolationException() {
-        Assertions.assertThrows(EntityNotFoundException.class, () -> {
-            service.delete(dependencyId);
-        });
     }
 
     @Test
     @DisplayName("Should return a user with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
-    void findById() {
-
+    void findById(UUID id) {
+        when(repository.findById(any())).thenReturn(Optional.of(user));
+        UserResponse response = service.findById(any());
+        verify(repository, times(1)).findById(any());
     }
 
 
     @Test
-    @DisplayName("Should not return a user with success")
+    @DisplayName("Should throw an exception when try find by Id")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findByIdThrowException() {
-
+        doThrow(EntityNotFoundException.class).when(repository).findById(ID_NO_EXIST);
+        Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            service.findById(ID_NO_EXIST);
+        });
+        verify(repository, times(1)).findById(any());
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Should list with page user with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findAllWithPageAndSearch() {
+        List<Role> role = permissionRepository.findAllByRole(any());
+        when(repository.findBySearch(anyString(), role, (Pageable) any())).thenReturn(userPage);
+
+        Page<UserResponse> response = service.findAllWithPageAndSearch(any(), any());
+        Assertions.assertNotNull(response);
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Should list all user with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findAllListed() {
-
-    }
-
-    private void startUser() {
-        LocalDate date = LocalDate.of(1970, 12, 21);
-
-        existId = UUID.fromString("f2e5aeb0-c519-418e-814d-3683852d3d17");
-        noExistId = UUID.fromString("07190383-eec3-4b02-a103-03344f5dd0f9");
-        dependencyId = UUID.fromString("62d81192-9be3-46d5-9d93-4dc34468859b");
-        idCooperative = UUID.fromString("62d81192-9be3-46a5-9d93-4dc34468859b");
-        RoleRequest roleRequest = new RoleRequest();
-        OnlyIdRequest onlyIdRequest = new OnlyIdRequest();
-        Role role = new Role();
-        Cooperative cooperative = new Cooperative();
-        user = User.builder().id(existId).userName("Jose").email("junior@junior.com").password("123456").active(true).cpf("885.885.885-00").birthday(date).roles(List.of(role)).cooperative(cooperative).build();
-        userRequest = UserRequest.builder().id(existId).userName("Jose").email("junior@junior.com").password("123456").active(true).cpf("885.885.885-00").roles(List.of(roleRequest)).cooperative(onlyIdRequest).build();
-        userResponse = UserResponse.builder().id(existId).userName("Jose").email("junior@junior.com").active(true).cpf("885.885.885-00").birthday(date).roles(List.of(roleRequest)).cooperative(onlyIdRequest).age(51).build();
+        when(repository.findAll()).thenReturn(List.of(user));
+        List<UserResponse> response = service.findAllListed();
+        Assertions.assertNotNull(response);
+        verify(repository, times(1)).findAll();
     }
 }

@@ -11,6 +11,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 public class CooperativeRequest implements Serializable {
     private static final long serialVersionUID = 1L;
     private UUID id;
