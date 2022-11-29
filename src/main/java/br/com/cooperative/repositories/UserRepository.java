@@ -24,4 +24,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Page<User> findBySearch(@Param("search") String search, @Param("permissions") List<Role> permissions, Pageable pageable);
 
     Optional<User> findByEmail(String email);
+
+    boolean existsByEmail(String email);
 }

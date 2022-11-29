@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 60 * 60)
-@RequestMapping("/v1/notification")
+@RequestMapping("/v1/notifications")
 @Tag(name = "Notification", description = "Manager notification")
 public class NotificationsController {
     @Autowired

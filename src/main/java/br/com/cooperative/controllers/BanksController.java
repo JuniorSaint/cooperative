@@ -1,10 +1,7 @@
 package br.com.cooperative.controllers;
 
-import br.com.cooperative.models.Response.AgencyBankResponse;
 import br.com.cooperative.models.Response.BankResponse;
-import br.com.cooperative.models.request.AgencyBankRequest;
 import br.com.cooperative.models.request.BankRequest;
-import br.com.cooperative.services.AgencyBankService;
 import br.com.cooperative.services.BankService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +15,7 @@ import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 60 * 60)
-@RequestMapping("/v1/bank")
+@RequestMapping("/v1/banks")
 @Tag(name = "Bank", description = "Manager Bank")
 public class BanksController {
     @Autowired

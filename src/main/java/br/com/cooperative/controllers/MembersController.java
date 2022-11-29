@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 60 * 60)
-@RequestMapping("/v1/member")
+@RequestMapping("/v1/members")
 @Tag(name = "Member", description = "Manager member")
 public class MembersController {
     @Autowired

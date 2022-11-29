@@ -1,24 +1,23 @@
 package br.com.cooperative.controllers;
 
-import javax.validation.Valid;
-
 import br.com.cooperative.models.Response.AgencyBankResponse;
 import br.com.cooperative.models.request.AgencyBankRequest;
 import br.com.cooperative.services.AgencyBankService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 60 * 60)
-@RequestMapping("/v1/agency-bank")
+@RequestMapping("/v1/agencies-banks")
 @Tag(name = "Agency Bank", description = "Manager Agency Bank")
 public class AgenciesBanksController {
     @Autowired

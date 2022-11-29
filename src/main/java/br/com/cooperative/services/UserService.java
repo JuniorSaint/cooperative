@@ -5,7 +5,6 @@ import br.com.cooperative.configs.Utils;
 import br.com.cooperative.exceptions.BadRequestException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.UserResponse;
-import br.com.cooperative.models.entities.Cooperative;
 import br.com.cooperative.models.entities.Role;
 import br.com.cooperative.models.entities.User;
 import br.com.cooperative.models.request.ChangePasswordRequest;
@@ -57,18 +56,16 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserResponse save(UserRequest request) {
-        Optional<User> searchForUser = repository.findByEmail(request.getEmail());
-        if (searchForUser.isPresent()) {
+        if (repository.existsByEmail(request.getEmail())) {
             throw new BadRequestException(
                     "Already exist user with this email: " + request.getEmail() + ", try with another one");
         }
         if (request.getCooperative() == null) {
             throw new BadRequestException("Cooperative not informed, it's not allowed user without a cooperative");
         }
-        findCooperativebyId(request.getCooperative().getId());
+        verifyIfCooperativeExist(request.getCooperative().getId());
         request.setPassword(passwordEncoder.encode(request.getPassword()));
-        User user = repository.save(mapper.map(request, User.class));
-        return mapper.map(user, UserResponse.class);
+        return mapper.map(repository.save(mapper.map(request, User.class)), UserResponse.class);
     }
 
     @Transactional
@@ -80,18 +77,16 @@ public class UserService implements UserDetailsService {
         if (request.getCooperative() == null) {
             throw new BadRequestException("Cooperative not informed, it's not allowed user without a cooperative");
         }
-        findCooperativebyId(request.getCooperative().getId());
+        verifyIfCooperativeExist(request.getCooperative().getId());
         User userEntity = new User();
         mapper.map(request, userEntity);
         userEntity.setPassword(searchForUser.get().getPassword());
-        UserResponse result = mapper.map(repository.save(userEntity), UserResponse.class);
-        return result;
+        return mapper.map(repository.save(userEntity), UserResponse.class);
     }
 
     public String changePassword(ChangePasswordRequest request) {
-        request.setPassword(passwordEncoder.encode(request.getPassword()));
         User user = mapper.map(findById(request.getId()), User.class);
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         repository.save(user);
         return "The password was changed with success of the user: " + user.getEmail();
     }
@@ -108,8 +103,7 @@ public class UserService implements UserDetailsService {
         if (response.isEmpty()) {
             throw new EntityNotFoundException("User" + CP.NOT_FOUND + " id:" + id);
         }
-        UserResponse result = mapper.map(response.get(), UserResponse.class);
-        return result;
+        return mapper.map(response.get(), UserResponse.class);
     }
 
     public Page<UserResponse> findAllWithPageAndSearch(String search, Pageable pageable) {
@@ -122,11 +116,10 @@ public class UserService implements UserDetailsService {
         return utils.mapListIntoDtoList(response, UserResponse.class);
     }
 
-    private Cooperative findCooperativebyId(UUID id) {
-        Optional<Cooperative> cooperative = cooperativeRepository.findById(id);
-        if (cooperative.isEmpty()) {
+    private boolean verifyIfCooperativeExist(UUID id) {
+        if (cooperativeRepository.existsById(id)) {
             throw new EntityNotFoundException("Cooperative" + CP.NOT_FOUND + " id: " + id);
         }
-        return cooperative.get();
+        return true;
     }
 }

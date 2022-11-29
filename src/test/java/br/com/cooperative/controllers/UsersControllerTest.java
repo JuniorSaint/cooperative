@@ -28,6 +28,7 @@ import java.util.List;
 
 import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
 import static br.com.cooperative.mock.EntitiesMock.*;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -66,7 +67,7 @@ class UsersControllerTest {
     @DisplayName("Should bring a list of users")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findAllUsers() throws Exception {
-        when(service.findAllListed()).thenReturn(List.of(userResponse));
+        given(service.findAllListed()).willReturn(List.of(userResponse));
         mockMvc.perform(get(URL_BASIC))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -78,7 +79,7 @@ class UsersControllerTest {
     @DisplayName("Should bring one user by id")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findById() throws Exception {
-        when(service.findById(any())).thenReturn(userResponse);
+        given(service.findById(any())).willReturn(userResponse);
         this.mockMvc
                 .perform(get(URL_BASIC + "{id}", ID_EXIST))
                 .andDo(print())
@@ -94,7 +95,7 @@ class UsersControllerTest {
     @DisplayName("Should save a user with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void save() throws Exception {
-        when(service.save(any())).thenReturn(userResponse);
+        given(service.save(any())).willReturn(userResponse);
         String jsonBody = new ObjectMapper().writeValueAsString(userRequest);
         ResultActions result =
                 mockMvc
@@ -114,7 +115,7 @@ class UsersControllerTest {
     @DisplayName("Should delete with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void delete() throws Exception {
-        when(service.delete(any())).thenReturn("User" + DELETE_MESSAGE);
+        given(service.delete(any())).willReturn("User" + DELETE_MESSAGE);
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete(URL_BASIC + "{id}", ID_EXIST))
                 .andExpect(status().isOk());
         verify(service, times(1)).delete(any());
@@ -125,7 +126,7 @@ class UsersControllerTest {
     @DisplayName("Should update a user with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void update() throws Exception {
-        when(service.update(any())).thenReturn(userResponse);
+        given(service.update(any())).willReturn(userResponse);
         String jsonBody = new ObjectMapper().writeValueAsString(userRequest);
         ResultActions result =
                 mockMvc
@@ -145,7 +146,7 @@ class UsersControllerTest {
     @DisplayName("Should change the password with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void changePassowrd() throws Exception {
-        when(service.update(any())).thenReturn(userResponse);
+        given(service.update(any())).willReturn(userResponse);
         String jsonBody = new ObjectMapper().writeValueAsString(changePasswordRequest);
         ResultActions result =
                 mockMvc
@@ -162,7 +163,7 @@ class UsersControllerTest {
     @DisplayName("Should bring a list of user with pageable and search with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findAllUserWithSearch() throws Exception {
-        when(service.findAllWithPageAndSearch(any(), (Pageable) any())).thenReturn(userPage);
+        given(service.findAllWithPageAndSearch(any(), (Pageable) any())).willReturn(userPage);
         this.mockMvc
                 .perform(get(URL_BASIC + "/seek"))
                 .andDo(print())
