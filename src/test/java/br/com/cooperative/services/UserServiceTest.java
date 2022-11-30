@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -52,11 +53,14 @@ class UserServiceTest {
     private PasswordEncoder passwordEncoder;
     private UserRequest userRequest;
     private UserResponse userResponse;
+    private List<UserResponse> userResponseList;
+    private List<User> userList;
     private Cooperative cooperative;
     private Role role;
     private ChangePasswordRequest changePasswordRequest;
     private User user;
     private PageImpl<User> userPage;
+    private PageImpl<UserResponse> userResponsePage;
 
     @BeforeEach
     void setUp() {
@@ -67,20 +71,25 @@ class UserServiceTest {
         changePasswordRequest = CHANGE_PASSWORD_REQUEST;
         userPage = new PageImpl<>(List.of(user));
         role = ROLE;
+        userResponsePage = new PageImpl<>(List.of(userResponse));
+        userResponseList = List.of(userResponse);
+        userList = List.of(user);
     }
 
     @Test
-    @DisplayName("Should return user in loadUserByUsername with success")
+    @DisplayName("loadUserByUsername - Should return user detail with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
-    void loadUserByUsername() {
-        when(repository.findByEmail(any())).thenReturn(Optional.of(user));
-        UserDetails response = service.loadUserByUsername(any());
-        Assertions.assertEquals(response.getClass(), UserDetails.class);
-        verify(repository, times(1)).existsByEmail(any());
+    void loadUserByUsernameWithSuccess() {
+        UserDetails userDetails = user;
+        when(repository.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(mapper.map(any(), any())).thenReturn(userDetails);
+        UserDetails response = service.loadUserByUsername(anyString());
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(response.getUsername(), "Jose");
     }
 
     @Test
-    @DisplayName("Should throw in loadUserByUsername EntityNotFoundException")
+    @DisplayName("loadUserByUsername - Should throw an exception EntityNotFoundException")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void loadUserByUsernameShouldThrowEntityNotFoundException() {
         when(repository.findByEmail(any())).thenReturn(Optional.empty());
@@ -91,17 +100,18 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Save - should save a user with success")
+    @DisplayName("Save - Should save a user with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
-    void save() {
-        when(repository.findByEmail(userRequest.getEmail())).thenReturn(Optional.empty());
+    void saveShouldSaveWithSuccess() {
+        when(repository.existsByEmail(userRequest.getEmail())).thenReturn(false);
         userRequest.setCooperative(ONLY_ID_REQUEST);
+        when(mapper.map(any(), any())).thenReturn(user);
         when(repository.save(user)).thenReturn(user);
         when(mapper.map(any(), any())).thenReturn(userResponse);
         UserResponse response = service.save(userRequest);
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals(response.getClass(), UserResponse.class);
-        verify(repository).save(any(User.class));
+//        Assertions.assertNotNull(response);
+//        Assertions.assertEquals(response.getClass(), UserResponse.class);
+        verify(repository, times(1)).save(user);
     }
 
     @Test
@@ -128,18 +138,20 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Update - Should throw BadRequestException when email dont exist")
+    @DisplayName("Update - Should throw BadRequestException when email doesn't exist")
     @EnabledForJreRange(min = JRE.JAVA_17)
-    void saveShouldThrowExceptionIfEmailDontExist() {
+    void updateShouldThrowExceptionIfEmailDontExist() {
+        when(repository.findByEmail(any())).thenReturn(Optional.empty());
         EntityNotFoundException res = Assertions.assertThrows(EntityNotFoundException.class, () -> service.update(userRequest));
         Assertions.assertEquals(res.getMessage(), "User" + CP.NOT_FOUND + " email: " + userRequest.getEmail());
-        verify(repository, never()).save(any());
+        verify(repository, never()).save(user);
     }
 
     @Test
     @DisplayName("Update - Should throw BadRequestException when cooperative is null")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void updateShouldThrowExceptionWhenCooperativeIsEmpty() {
+        when(repository.findByEmail(any())).thenReturn(Optional.of(user));
         userRequest.setCooperative(null);
         BadRequestException res = Assertions.assertThrows(BadRequestException.class, () -> {
             service.update(userRequest);
@@ -164,9 +176,10 @@ class UserServiceTest {
     @Test
     @DisplayName("Change Password - Should change password with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
-    void changePassword() {
-        when(service.findById(any())).thenReturn(userResponse);
-        when(mapper.map(userResponse, User.class)).thenReturn(user);
+    void changePasswordShouldChangeWithSuccess() {
+        when(repository.findById(any())).thenReturn(Optional.of(user));
+        when(mapper.map(any(), eq(User.class))).thenReturn(user);
+        when(mapper.map(any(), eq(UserResponse.class))).thenReturn(userResponse);
         String response = service.changePassword(changePasswordRequest);
         Assertions.assertEquals(response, "The password was changed with success of the user: " + user.getEmail());
         Assertions.assertNotNull(response);
@@ -181,22 +194,22 @@ class UserServiceTest {
         Assertions.assertDoesNotThrow(() -> service.delete(any()));
         Assertions.assertEquals("User" + DELETE_MESSAGE, "User" + DELETE_MESSAGE);
         verify(repository, times(1)).deleteById(any());
-
     }
 
     @Test
-    @DisplayName("Find by Id - Should throw an exception when try find by Id")
+    @DisplayName("FindById - Should throw an exception when try find by Id")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findByIdThrowException() {
         when(repository.findById(any())).thenReturn(Optional.empty());
         EntityNotFoundException resp = Assertions.assertThrows(EntityNotFoundException.class, () -> {
-            service.findById(any());
+            service.findById(ID_EXIST);
         });
         Assertions.assertEquals(resp.getClass(), EntityNotFoundException.class);
+        Assertions.assertEquals(resp.getMessage(), "User" + CP.NOT_FOUND + " id:" + ID_EXIST);
     }
 
     @Test
-    @DisplayName("Find by Id - Should return a user with success")
+    @DisplayName("FindById - Should return a user with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findByIdShouldReturnUserWithSuccess() {
         when(repository.findById(ID_EXIST)).thenReturn(Optional.of(user));
@@ -207,27 +220,30 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Should list with page user with success")
+    @DisplayName("findAllWithPageAndSearch - Should list users with page successfully")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findAllWithPageAndSearch() {
         when(permissionRepository.findAllByRole(any())).thenReturn(List.of(role));
-        when(repository.findBySearch(anyString(), anyList(), (Pageable) any())).thenReturn(userPage);
-        Assertions.assertDoesNotThrow(() -> {
-            service.findAllWithPageAndSearch(anyString(), (Pageable) any());
-        });
-        verify(repository).findBySearch(anyString(), anyList(), (Pageable) any());
-        verify(repository, times(1)).findBySearch(anyString(), anyList(), (Pageable) any());
-
-
+        when(repository.findBySearch(anyString(), anyList(), any(Pageable.class))).thenReturn(userPage);
+        Page<UserResponse> responses = service.findAllWithPageAndSearch(anyString(), any(Pageable.class));
+        Assertions.assertEquals(responses.getTotalElements(), 1);
+        Assertions.assertEquals(responses.getContent(), userPage);
+        Assertions.assertEquals(responses.getTotalPages(), 0);
+        verify(repository).findBySearch(anyString(), anyList(), any(Pageable.class));
+        verify(repository, times(1)).findBySearch(anyString(), anyList(), any(Pageable.class));
     }
 
     @Test
-    @DisplayName("Should list all user with success")
+    @DisplayName("findAllListed - Should list all user with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findAllListed() {
-        when(repository.findAll()).thenReturn(List.of(user));
+        when(repository.findAll()).thenReturn(userList);
+        when(utils.mapListIntoDtoList(userList, UserResponse.class)).thenReturn(userResponseList);
         List<UserResponse> response = service.findAllListed();
         Assertions.assertNotNull(response);
+        Assertions.assertEquals(response.size(), 1);
+        Assertions.assertEquals(response.get(0).getClass(), UserResponse.class);
         verify(repository, times(1)).findAll();
+
     }
 }

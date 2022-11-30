@@ -117,7 +117,8 @@ class UsersControllerTest {
     void delete() throws Exception {
         given(service.delete(any())).willReturn("User" + DELETE_MESSAGE);
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete(URL_BASIC + "{id}", ID_EXIST))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string("User" + DELETE_MESSAGE));
         verify(service, times(1)).delete(any());
     }
 
@@ -146,7 +147,7 @@ class UsersControllerTest {
     @DisplayName("Should change the password with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void changePassowrd() throws Exception {
-        given(service.update(any())).willReturn(userResponse);
+        given(service.changePassword(any())).willReturn("The password was changed with success of the user: " + user.getEmail());
         String jsonBody = new ObjectMapper().writeValueAsString(changePasswordRequest);
         ResultActions result =
                 mockMvc
@@ -155,7 +156,9 @@ class UsersControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON));
 
-        result.andExpect(status().isOk());
+        result
+                .andExpect(status().isOk())
+                .andExpect(content().string("The password was changed with success of the user: " + user.getEmail()));
         verify(service, times(1)).changePassword(any());
     }
 

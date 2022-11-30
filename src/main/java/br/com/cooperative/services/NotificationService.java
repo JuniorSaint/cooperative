@@ -48,7 +48,7 @@ public class NotificationService {
         mailRequest.setTo("junior.sendemail@gmail.com");
         mailRequest.setFrom(user.getEmail());
         mailRequest.setSubject("Envio de notificação");
-//        sendEmail(mailRequest);
+        sendEmail(mailRequest);
         return response;
     }
 

@@ -112,8 +112,7 @@ public class UserService implements UserDetailsService {
     }
 
     public List<UserResponse> findAllListed() {
-        List<User> response = repository.findAll();
-        return utils.mapListIntoDtoList(response, UserResponse.class);
+        return utils.mapListIntoDtoList(repository.findAll(), UserResponse.class);
     }
 
     private boolean verifyIfCooperativeExist(UUID id) {
