@@ -1,10 +1,8 @@
 package br.com.cooperative.models.Response;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -13,6 +11,8 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@JsonPropertyOrder({"id", "minimumLoanValue", "maximumLoanAmount", "active"})
 public class ParameterResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 

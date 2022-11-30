@@ -1,22 +1,15 @@
 package br.com.cooperative.models.request;
 
-import br.com.cooperative.models.entities.*;
+import br.com.cooperative.models.entities.Address;
+import br.com.cooperative.models.entities.Contact;
 import br.com.cooperative.models.entities.Parameter;
 import br.com.cooperative.models.enums.GenderTypeEnum;
 import br.com.cooperative.models.enums.MaritalStatusEnum;
 import br.com.cooperative.models.enums.PersonTypeEnum;
 import br.com.cooperative.models.enums.PropertyRegimeEnum;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.hateoas.RepresentationModel;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
@@ -25,6 +18,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 public class MemberRequest  implements Serializable {
     private static final long serialVersionUID = 1L;
 

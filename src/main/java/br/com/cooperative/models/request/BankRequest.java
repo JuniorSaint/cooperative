@@ -1,20 +1,18 @@
 package br.com.cooperative.models.request;
 
-import br.com.cooperative.models.entities.AgencyBank;
 import lombok.*;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import java.io.Serializable;
-import java.util.Set;
 import java.util.UUID;
 
 @NoArgsConstructor
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 public class BankRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 

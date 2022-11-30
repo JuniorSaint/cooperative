@@ -1,10 +1,7 @@
 package br.com.cooperative.models.Response;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -13,6 +10,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @JsonPropertyOrder({"id", "name", "phone", "email"})
 public class ContactResponse implements Serializable {
     private static final long serialVersionUID = 1L;

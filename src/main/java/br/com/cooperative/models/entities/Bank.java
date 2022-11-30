@@ -7,16 +7,16 @@ import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @Table(name = "banks")
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
+@Builder
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Bank extends RepresentationModel<Bank> implements Serializable {
     private static final long serialVersionUID = 1L;

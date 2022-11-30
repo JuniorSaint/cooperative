@@ -55,7 +55,7 @@ public class AgenciesBanksController {
     }
 
     @GetMapping("/seek")
-    public ResponseEntity<Page<AgencyBankResponse>> findAllUserWithSearch(@RequestParam(value = "search", defaultValue = "") String search, Pageable pageable) {
+    public ResponseEntity<Page<AgencyBankResponse>> findAllAgencyBankWithSearch(@RequestParam(value = "search", defaultValue = "") String search, Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.findAllWithPageAndSearch(search, pageable));
     }

@@ -9,6 +9,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 public class AgencyBankRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 

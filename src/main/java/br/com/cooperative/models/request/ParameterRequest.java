@@ -10,6 +10,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 public class ParameterRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 

@@ -8,10 +8,7 @@ import br.com.cooperative.models.enums.MaritalStatusEnum;
 import br.com.cooperative.models.enums.PersonTypeEnum;
 import br.com.cooperative.models.enums.PropertyRegimeEnum;
 import br.com.cooperative.models.request.OnlyIdRequest;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -22,6 +19,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class MemberResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 

@@ -178,8 +178,7 @@ class UserServiceTest {
     @EnabledForJreRange(min = JRE.JAVA_17)
     void changePasswordShouldChangeWithSuccess() {
         when(repository.findById(any())).thenReturn(Optional.of(user));
-        when(mapper.map(any(), eq(User.class))).thenReturn(user);
-        when(mapper.map(any(), eq(UserResponse.class))).thenReturn(userResponse);
+        when(mapper.map(any(), any())).thenReturn(user);
         String response = service.changePassword(changePasswordRequest);
         Assertions.assertEquals(response, "The password was changed with success of the user: " + user.getEmail());
         Assertions.assertNotNull(response);

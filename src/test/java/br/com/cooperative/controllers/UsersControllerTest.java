@@ -64,7 +64,7 @@ class UsersControllerTest {
     }
 
     @Test
-    @DisplayName("Should bring a list of users")
+    @DisplayName("Should fetch a list of users")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findAllUsers() throws Exception {
         given(service.findAllListed()).willReturn(List.of(userResponse));
@@ -76,7 +76,7 @@ class UsersControllerTest {
     }
 
     @Test
-    @DisplayName("Should bring one user by id")
+    @DisplayName("Should fetch one user by id")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findById() throws Exception {
         given(service.findById(any())).willReturn(userResponse);
@@ -112,7 +112,7 @@ class UsersControllerTest {
     }
 
     @Test
-    @DisplayName("Should delete with success")
+    @DisplayName("Should delete an object with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void delete() throws Exception {
         given(service.delete(any())).willReturn("User" + DELETE_MESSAGE);
@@ -163,7 +163,7 @@ class UsersControllerTest {
     }
 
     @Test
-    @DisplayName("Should bring a list of user with pageable and search with success")
+    @DisplayName("Should fetch a list of user with pageable and search with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findAllUserWithSearch() throws Exception {
         given(service.findAllWithPageAndSearch(any(), (Pageable) any())).willReturn(userPage);

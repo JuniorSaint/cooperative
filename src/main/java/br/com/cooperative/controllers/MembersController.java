@@ -36,13 +36,13 @@ public class MembersController {
 
     @GetMapping
     public ResponseEntity<List<MemberResponse>> findAll() {
-        return ResponseEntity.status(HttpStatus.ACCEPTED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(service.findAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<MemberResponse> findById(@PathVariable(value = "id") UUID id) {
-        return ResponseEntity.status(HttpStatus.ACCEPTED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(service.findById(id));
     }
     @DeleteMapping("/{id}")
