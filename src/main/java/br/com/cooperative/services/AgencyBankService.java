@@ -39,7 +39,7 @@ public class AgencyBankService {
         if (request.getId() != null) {
             findById(request.getId());
         }
-        if (request.getBank().getId() == null) {
+        if (request.getBank() == null) {
             throw new BadRequestException("It's not allowed register an agency bank without bank");
         }
         Optional<Bank> responseBank = bankRepository.findById(request.getBank().getId());

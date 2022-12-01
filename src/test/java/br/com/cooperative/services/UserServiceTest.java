@@ -186,7 +186,7 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Delete - Should delete user with success")
+    @DisplayName("Delete - Should delete an object with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void delete() {
         when(repository.findById(any())).thenReturn(Optional.of(user));
@@ -216,6 +216,7 @@ class UserServiceTest {
         UserResponse response = service.findById(ID_EXIST);
         Assertions.assertEquals(response.getClass(), UserResponse.class);
         Assertions.assertNotNull(response);
+        verify(repository).findById(ID_EXIST);
     }
 
     @Test
@@ -243,6 +244,5 @@ class UserServiceTest {
         Assertions.assertEquals(response.size(), 1);
         Assertions.assertEquals(response.get(0).getClass(), UserResponse.class);
         verify(repository, times(1)).findAll();
-
     }
 }
