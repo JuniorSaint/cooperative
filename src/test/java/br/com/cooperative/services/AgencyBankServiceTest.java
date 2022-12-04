@@ -17,13 +17,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 import java.util.Optional;
 
-import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
 import static br.com.cooperative.mock.EntitiesMock.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -49,6 +51,8 @@ class AgencyBankServiceTest {
     private List<AgencyBankResponse> agencyBankResponseList;
     private PageImpl<AgencyBankResponse> agencyBankResponsePage;
     private Bank bank;
+    private Pageable pageable;
+    private PageImpl<AgencyBank> agencyBankPage;
 
 
     @BeforeEach
@@ -57,9 +61,11 @@ class AgencyBankServiceTest {
         agencyBankRequest = AGENCY_BANK_REQUEST;
         agencyBankResponse = AGENCY_BANK_RESPONSE;
         agencyBankResponsePage = new PageImpl<>(List.of(agencyBankResponse));
+        agencyBankPage = new PageImpl<>(List.of(agencyBank));
         agencyBankList = List.of(agencyBank);
         agencyBankResponseList = List.of(agencyBankResponse);
         bank = BANK;
+        pageable = PageRequest.of(0, 20);
     }
 
     @Test
@@ -67,7 +73,7 @@ class AgencyBankServiceTest {
     @EnabledForJreRange(min = JRE.JAVA_17)
     void saveShouldThrowExceptionBankIsNull() {
         when(repository.findById(any())).thenReturn(Optional.of(agencyBank));
-        agencyBankRequest.setBank(null);
+        agencyBankRequest.getBank().setId(null);
         BadRequestException response = Assertions.assertThrows(BadRequestException.class, () -> {
             service.saveUpdate(agencyBankRequest);
         });
@@ -109,12 +115,12 @@ class AgencyBankServiceTest {
         when(repository.findById(any())).thenReturn(Optional.of(agencyBank));
         when(bankRepository.findById(any())).thenReturn(Optional.of(bank));
         when(mapper.map(any(), eq(AgencyBank.class))).thenReturn(agencyBank);
-        when(mapper.map(any(), eq(Bank.class))).thenReturn(bank);
         when(mapper.map(any(), eq(AgencyBankResponse.class))).thenReturn(agencyBankResponse);
         AgencyBankResponse response = service.saveUpdate(agencyBankRequest);
 
-        verify(repository).save(agencyBank);
+        Assertions.assertNotNull(response.getId());
         Assertions.assertEquals(response.getClass(), AgencyBankResponse.class);
+        verify(repository).save(agencyBank);
     }
 
     @Test
@@ -154,7 +160,16 @@ class AgencyBankServiceTest {
     }
 
     @Test
+    @DisplayName("Find all Pageable - Should fetch all pageable and filtered successfully")
+    @EnabledForJreRange(min = JRE.JAVA_17)
     void findAllWithPageAndSearch() {
+        when(repository.findBySearch(anyString(), any(Pageable.class))).thenReturn(agencyBankPage);
+        when(utils.mapEntityPageIntoDtoPage(agencyBankPage, AgencyBankResponse.class)).thenReturn(agencyBankResponsePage);
+        Page<AgencyBankResponse> responses = service.findAllWithPageAndSearch("Vaticano", pageable);
+        Assertions.assertNotNull(responses);
+        Assertions.assertEquals(responses.getTotalElements(), 1);
+        Assertions.assertEquals(responses.getSize(), 1);
+        verify(repository).findBySearch(anyString(), any(Pageable.class));
     }
 
     @Test
@@ -163,7 +178,6 @@ class AgencyBankServiceTest {
     void delete() {
         when(repository.findById(any())).thenReturn(Optional.of(agencyBank));
         Assertions.assertDoesNotThrow(() -> service.delete(any()));
-        Assertions.assertEquals("Agency bank" + DELETE_MESSAGE, "Agency bank" + DELETE_MESSAGE);
         verify(repository).deleteById(any());
     }
 }

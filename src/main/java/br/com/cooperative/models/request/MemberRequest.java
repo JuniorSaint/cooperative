@@ -36,9 +36,9 @@ public class MemberRequest  implements Serializable {
     private String profission;
     private String father;
     private String mother;
-    private Set<OnlyIdRequest> agenciesBanks;
+    private Set<AgencyBankRequest> agencyBankRequestSet;
     private Parameter parameter;
     private Address address;
     private Contact contact;
-    private OnlyIdRequest cooperative;
+    private CooperativeRequest cooperative;
 }

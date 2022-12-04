@@ -39,7 +39,7 @@ public class AgencyBankService {
         if (request.getId() != null) {
             findById(request.getId());
         }
-        if (request.getBank() == null) {
+        if (request.getBank().getId() == null) {
             throw new BadRequestException("It's not allowed register an agency bank without bank");
         }
         Optional<Bank> responseBank = bankRepository.findById(request.getBank().getId());
@@ -50,7 +50,7 @@ public class AgencyBankService {
             throw new BadRequestException("It's not allowed register an agency bank without a cooperative");
         }
         AgencyBank agencyBank = mapper.map(request, AgencyBank.class);
-        agencyBank.setBank(mapper.map(responseBank.get(), Bank.class));
+        agencyBank.setBank(responseBank.get());
         return mapper.map(repository.save(agencyBank), AgencyBankResponse.class);
     }
 

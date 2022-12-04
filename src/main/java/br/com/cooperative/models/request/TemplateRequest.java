@@ -1,6 +1,5 @@
 package br.com.cooperative.models.request;
 
-import br.com.cooperative.models.entities.Cooperative;
 import lombok.*;
 
 import java.io.Serializable;
@@ -16,5 +15,5 @@ public class TemplateRequest implements Serializable {
 
     private UUID id;
     private String body;
-    private OnlyIdRequest cooperative;
+    private CooperativeRequest cooperative;
 }

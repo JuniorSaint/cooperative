@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -61,6 +62,7 @@ class UserServiceTest {
     private User user;
     private PageImpl<User> userPage;
     private PageImpl<UserResponse> userResponsePage;
+    private Pageable pageable;
 
     @BeforeEach
     void setUp() {
@@ -74,6 +76,7 @@ class UserServiceTest {
         userResponsePage = new PageImpl<>(List.of(userResponse));
         userResponseList = List.of(userResponse);
         userList = List.of(user);
+        pageable = PageRequest.of(0, 20);
     }
 
     @Test
@@ -100,11 +103,11 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Save - Should save a user with success")
+    @DisplayName("Save - Should save an user with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void saveShouldSaveWithSuccess() {
         when(repository.existsByEmail(userRequest.getEmail())).thenReturn(false);
-        userRequest.setCooperative(ONLY_ID_REQUEST);
+        userRequest.setCooperative(COOPERATIVE_REQUEST);
         when(mapper.map(any(), any())).thenReturn(user);
         when(repository.save(user)).thenReturn(user);
         when(mapper.map(any(), any())).thenReturn(userResponse);
@@ -220,21 +223,21 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("findAllWithPageAndSearch - Should list users with page successfully")
+    @DisplayName("Find all Pageable - Should fetch all pageable and filtered successfully")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findAllWithPageAndSearch() {
-        when(permissionRepository.findAllByRole(any())).thenReturn(List.of(role));
-        when(repository.findBySearch(anyString(), anyList(), any(Pageable.class))).thenReturn(userPage);
-        Page<UserResponse> responses = service.findAllWithPageAndSearch(anyString(), any(Pageable.class));
+        when(permissionRepository.findAllByRole(anyString())).thenReturn(List.of(role));
+        when(repository.findBySearch(anyString(), anyList(), eq(pageable))).thenReturn(userPage);
+        when(utils.mapEntityPageIntoDtoPage(userPage, UserResponse.class)).thenReturn(userResponsePage);
+        Page<UserResponse> responses = service.findAllWithPageAndSearch("Jose", pageable);
         Assertions.assertEquals(responses.getTotalElements(), 1);
-        Assertions.assertEquals(responses.getContent(), userPage);
-        Assertions.assertEquals(responses.getTotalPages(), 0);
+        Assertions.assertEquals(responses.getSize(), 1);
         verify(repository).findBySearch(anyString(), anyList(), any(Pageable.class));
         verify(repository, times(1)).findBySearch(anyString(), anyList(), any(Pageable.class));
     }
 
     @Test
-    @DisplayName("findAllListed - Should list all user with success")
+    @DisplayName("findAllListed - Should fetch listed all user with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findAllListed() {
         when(repository.findAll()).thenReturn(userList);

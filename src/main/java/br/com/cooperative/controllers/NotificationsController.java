@@ -55,7 +55,7 @@ public class NotificationsController {
     public ResponseEntity<Page<NotificationResponse>> findAllUserWithSearch(@RequestParam(value = "idUser", defaultValue = "0") Long idUser,
                                                                             @RequestParam(value = "wasRead", defaultValue = "false") Boolean wasRead,
                                                                             @RequestParam(value = "dateInicial") LocalDate dateInicial,
-                                                                            @RequestParam(value = "dateFinal" ) LocalDate dateFinal,
+                                                                            @RequestParam(value = "dateFinal") LocalDate dateFinal,
                                                                             Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.findAllWithPageAndSearch(idUser, wasRead, dateInicial, dateFinal, pageable));

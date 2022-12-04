@@ -7,9 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public enum CooperativeTypeEnum {
-    MATRIX(1, "matrix"),
-    BRANCH(2, "branch");
+    MATRIX,
+    BRANCH;
 
-    private final Integer guid;
-    private final String description;
+
 }

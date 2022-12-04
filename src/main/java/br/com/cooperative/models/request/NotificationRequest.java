@@ -18,5 +18,5 @@ public class NotificationRequest implements Serializable {
     private String body;
     private Boolean wasRead;
     private Instant createdAt;
-    private OnlyIdRequest user;
+    private UserRequest user;
 }

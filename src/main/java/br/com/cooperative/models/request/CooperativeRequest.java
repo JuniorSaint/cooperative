@@ -18,7 +18,7 @@ public class CooperativeRequest implements Serializable {
     private String name;
     private CooperativeTypeEnum cooperativeType;
     private String cnpj;
-    private OnlyIdRequest matrix;
+    private CooperativeRequest matrix;
     private Address address;
     private Contact contact;
 }

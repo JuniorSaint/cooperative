@@ -18,8 +18,8 @@ public class AgencyBankRequest implements Serializable {
     private String count;
     private String cnpj;
     private boolean active;
-    private OnlyIdRequest bank;
+    private BankRequest bank;
     private ContactRequest contact;
     private AddressRequest address;
-    private OnlyIdRequest cooperative;
+    private CooperativeRequest cooperative;
 }

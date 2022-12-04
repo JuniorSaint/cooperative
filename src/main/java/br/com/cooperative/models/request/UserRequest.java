@@ -22,5 +22,5 @@ public class UserRequest implements  Serializable {
     private Boolean active;
     private String cpf;
     private List<RoleRequest> roles;
-    private OnlyIdRequest cooperative;
+    private CooperativeRequest cooperative;
 }

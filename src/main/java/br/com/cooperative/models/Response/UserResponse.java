@@ -1,7 +1,6 @@
 package br.com.cooperative.models.Response;
 
 
-import br.com.cooperative.models.request.OnlyIdRequest;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.*;
 
@@ -28,7 +27,7 @@ public class UserResponse implements Serializable {
 
     private LocalDate birthday;
     private List<RoleResponse> roles;
-    private OnlyIdRequest cooperative;
+    private CooperativeResponse cooperative;
     private Integer age;
 
 

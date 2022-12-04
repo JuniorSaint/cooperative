@@ -7,7 +7,6 @@ import br.com.cooperative.models.enums.GenderTypeEnum;
 import br.com.cooperative.models.enums.MaritalStatusEnum;
 import br.com.cooperative.models.enums.PersonTypeEnum;
 import br.com.cooperative.models.enums.PropertyRegimeEnum;
-import br.com.cooperative.models.request.OnlyIdRequest;
 import lombok.*;
 
 import java.io.Serializable;
@@ -41,5 +40,5 @@ public class MemberResponse implements Serializable {
     private Parameter parameter;
     private Address address;
     private Contact contact;
-    private OnlyIdRequest cooperative;
+    private CooperativeResponse cooperative;
 }
