@@ -52,7 +52,7 @@ public class NotificationsController {
     }
 
     @GetMapping("/seek")
-    public ResponseEntity<Page<NotificationResponse>> findAllUserWithSearch(@RequestParam(value = "idUser", defaultValue = "0") Long idUser,
+    public ResponseEntity<Page<NotificationResponse>> findAllUserWithSearch(@RequestParam(value = "idUser", defaultValue = "0") UUID idUser,
                                                                             @RequestParam(value = "wasRead", defaultValue = "false") Boolean wasRead,
                                                                             @RequestParam(value = "dateInicial") LocalDate dateInicial,
                                                                             @RequestParam(value = "dateFinal") LocalDate dateFinal,

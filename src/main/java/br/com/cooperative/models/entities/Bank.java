@@ -33,11 +33,11 @@ public class Bank extends RepresentationModel<Bank> implements Serializable {
     @OneToMany(mappedBy = "bank")
     private Set<AgencyBank> agencyBanks;
 
-    public void setCnpj(String cnpj) {
-        if (cnpj == null) {
-            this.cnpj = cnpj;
-        } else {
-            this.cnpj = cnpj.replaceAll("\\D", "");
-        }
-    }
+//    public void setCnpj(String cnpj) {
+//        if (cnpj == null) {
+//            this.cnpj = cnpj;
+//        } else {
+//            this.cnpj = cnpj.replaceAll("\\D", "");
+//        }
+//    }
 }

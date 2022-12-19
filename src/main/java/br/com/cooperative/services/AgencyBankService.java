@@ -50,7 +50,7 @@ public class AgencyBankService {
             throw new BadRequestException("It's not allowed register an agency bank without a cooperative");
         }
         AgencyBank agencyBank = mapper.map(request, AgencyBank.class);
-        agencyBank.setBank(responseBank.get());
+        responseBank.ifPresent(agencyBank::setBank);
         return mapper.map(repository.save(agencyBank), AgencyBankResponse.class);
     }
 

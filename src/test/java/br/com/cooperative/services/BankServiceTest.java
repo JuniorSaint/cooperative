@@ -90,7 +90,7 @@ class BankServiceTest {
 
     @Test
     void findAll() {
-         when(repository.findAll()).thenReturn(listBank);
+        when(repository.findAll()).thenReturn(listBank);
         when(utils.mapListIntoDtoList(listBank, BankResponse.class)).thenReturn(bankResponseList);
         List<BankResponse> responses = service.findAll();
         Assertions.assertNotNull(responses);

@@ -103,21 +103,6 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Save - Should save an user with success")
-    @EnabledForJreRange(min = JRE.JAVA_17)
-    void saveShouldSaveWithSuccess() {
-        when(repository.existsByEmail(userRequest.getEmail())).thenReturn(false);
-        userRequest.setCooperative(COOPERATIVE_REQUEST);
-        when(mapper.map(any(), any())).thenReturn(user);
-        when(repository.save(user)).thenReturn(user);
-        when(mapper.map(any(), any())).thenReturn(userResponse);
-        UserResponse response = service.save(userRequest);
-//        Assertions.assertNotNull(response);
-//        Assertions.assertEquals(response.getClass(), UserResponse.class);
-        verify(repository, times(1)).save(user);
-    }
-
-    @Test
     @DisplayName("Save - Should throw BadRequestException when email already exist")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void saveShouldThrowExceptionIfEmailExist() {
@@ -138,6 +123,21 @@ class UserServiceTest {
         });
         Assertions.assertEquals(res.getClass(), BadRequestException.class);
         verify(repository, never()).save(user);
+    }
+
+    @Test
+    @DisplayName("Save - Should save an user with success")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void saveShouldSaveWithSuccess() {
+        when(repository.existsByEmail(userRequest.getEmail())).thenReturn(false);
+        userRequest.setCooperative(COOPERATIVE_REQUEST);
+        when(mapper.map(any(), eq(User.class))).thenReturn(user);
+        when(mapper.map(any(User.class), eq(UserResponse.class))).thenReturn(userResponse);
+        when(repository.save(user)).thenReturn(user);
+        UserResponse response = service.save(userRequest);
+//        Assertions.assertNotNull(response);
+//        Assertions.assertEquals(response.getClass(), UserResponse.class);
+        verify(repository, times(1)).save(user);
     }
 
     @Test
@@ -181,7 +181,8 @@ class UserServiceTest {
     @EnabledForJreRange(min = JRE.JAVA_17)
     void changePasswordShouldChangeWithSuccess() {
         when(repository.findById(any())).thenReturn(Optional.of(user));
-        when(mapper.map(any(), any())).thenReturn(user);
+        when(mapper.map(any(), eq(User.class))).thenReturn(user);
+        when(repository.save(any())).thenReturn(user);
         String response = service.changePassword(changePasswordRequest);
         Assertions.assertEquals(response, "The password was changed with success of the user: " + user.getEmail());
         Assertions.assertNotNull(response);

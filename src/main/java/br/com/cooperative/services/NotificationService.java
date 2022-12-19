@@ -1,14 +1,16 @@
 package br.com.cooperative.services;
 
 import br.com.cooperative.configs.Utils;
+import br.com.cooperative.exceptions.BadRequestException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.MailResponse;
 import br.com.cooperative.models.Response.NotificationResponse;
-import br.com.cooperative.models.Response.UserResponse;
 import br.com.cooperative.models.entities.Notification;
+import br.com.cooperative.models.entities.User;
 import br.com.cooperative.models.request.MailRequest;
 import br.com.cooperative.models.request.NotificationRequest;
 import br.com.cooperative.repositories.NotificationRepository;
+import br.com.cooperative.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,21 +36,18 @@ public class NotificationService {
     private MailService service;
 
     @Autowired
-    private UserService userService;
+    private UserRepository userRepository;
 
     @Autowired
     private ModelMapper mapper;
 
     @Transactional
     public NotificationResponse save(NotificationRequest request) {
+        if(request.getBody() == null){
+            throw new BadRequestException("The body of message is not allowed null");
+        }
         NotificationResponse response = mapper.map(repository.save(mapper.map(request, Notification.class)), NotificationResponse.class);
-        UserResponse user = userService.findById(request.getUser().getId());
-        var mailRequest = new MailRequest();
-        mailRequest.setName(user.getUserName());
-        mailRequest.setTo("junior.sendemail@gmail.com");
-        mailRequest.setFrom(user.getEmail());
-        mailRequest.setSubject("Envio de notificação");
-        sendEmail(mailRequest);
+//        sendEmailAfterSaveNotification(response.getUser().getId());
         return response;
     }
 
@@ -74,7 +73,7 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public Page<NotificationResponse> findAllWithPageAndSearch(Long idUser, Boolean wasRead, LocalDate dateInicial, LocalDate dateFinal, Pageable pageable) {
+    public Page<NotificationResponse> findAllWithPageAndSearch(UUID idUser, Boolean wasRead, LocalDate dateInicial, LocalDate dateFinal, Pageable pageable) {
         return utils.mapEntityPageIntoDtoPage(repository.findNotificatioin(idUser, wasRead, dateInicial, dateFinal, pageable), NotificationResponse.class);
     }
 
@@ -83,5 +82,15 @@ public class NotificationService {
         findById(id);
         repository.deleteById(id);
         return "Notification" + DELETE_MESSAGE;
+    }
+
+    private void sendEmailAfterSaveNotification(UUID id){
+        User user = userRepository.findById(id).get();
+        var mailRequest = new MailRequest();
+        mailRequest.setName(user.getUsername());
+        mailRequest.setTo("junior.sendemail@gmail.com");
+        mailRequest.setFrom(user.getEmail());
+        mailRequest.setSubject("Envio de notificação");
+        sendEmail(mailRequest);
     }
 }

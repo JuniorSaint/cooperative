@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -22,7 +21,7 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
             "obj.createdAt BETWEEN :dateInicial AND :dateFinal" +
 //            "order by obj.createdAt desc" +
             "")
-    Page<Notification> findNotificatioin(@Param(value = "idUser") Long idUser,
+    Page<Notification> findNotificatioin(@Param(value = "idUser") UUID idUser,
                                          @Param(value = "wasRead") Boolean wasRead,
                                          @Param(value = "dateInicial") LocalDate dateInicial,
                                          @Param(value = "dateFinal") LocalDate dateFinal, Pageable pageable);

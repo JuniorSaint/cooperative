@@ -74,9 +74,7 @@ class AgencyBankServiceTest {
     void saveShouldThrowExceptionBankIsNull() {
         when(repository.findById(any())).thenReturn(Optional.of(agencyBank));
         agencyBankRequest.getBank().setId(null);
-        BadRequestException response = Assertions.assertThrows(BadRequestException.class, () -> {
-            service.saveUpdate(agencyBankRequest);
-        });
+        BadRequestException response = Assertions.assertThrows(BadRequestException.class, () -> service.saveUpdate(agencyBankRequest));
         verify(repository, never()).save(agencyBank);
         Assertions.assertEquals(response.getClass(), BadRequestException.class);
     }
@@ -87,9 +85,8 @@ class AgencyBankServiceTest {
     void saveShouldThrowEntityNotFoundExceptionWhenBankNotFound() {
         when(repository.findById(any())).thenReturn(Optional.of(agencyBank));
         when(bankRepository.findById(any())).thenReturn(Optional.empty());
-        EntityNotFoundException response = Assertions.assertThrows(EntityNotFoundException.class, () -> {
-            service.saveUpdate(agencyBankRequest);
-        });
+        EntityNotFoundException response = Assertions.assertThrows(
+                EntityNotFoundException.class, () -> service.saveUpdate(agencyBankRequest));
         verify(repository, never()).save(agencyBank);
         Assertions.assertEquals(response.getClass(), EntityNotFoundException.class);
     }
@@ -101,9 +98,8 @@ class AgencyBankServiceTest {
         when(repository.findById(any())).thenReturn(Optional.of(agencyBank));
         when(bankRepository.findById(any())).thenReturn(Optional.of(bank));
         agencyBankRequest.setCooperative(null);
-        BadRequestException response = Assertions.assertThrows(BadRequestException.class, () -> {
-            service.saveUpdate(agencyBankRequest);
-        });
+        BadRequestException response = Assertions.assertThrows(
+                BadRequestException.class, () -> service.saveUpdate(agencyBankRequest));
         verify(repository, never()).save(agencyBank);
         Assertions.assertEquals(response.getClass(), BadRequestException.class);
     }
@@ -128,9 +124,7 @@ class AgencyBankServiceTest {
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findByIdThrowException() {
         when(repository.findById(any())).thenReturn(Optional.empty());
-        EntityNotFoundException resp = Assertions.assertThrows(EntityNotFoundException.class, () -> {
-            service.findById(ID_EXIST);
-        });
+        EntityNotFoundException resp = Assertions.assertThrows(EntityNotFoundException.class, () -> service.findById(ID_EXIST));
         Assertions.assertEquals(resp.getClass(), EntityNotFoundException.class);
         Assertions.assertEquals(resp.getMessage(), "Agency bank" + CP.NOT_FOUND + "id: " + ID_EXIST);
     }
@@ -154,8 +148,8 @@ class AgencyBankServiceTest {
         when(utils.mapListIntoDtoList(agencyBankList, AgencyBankResponse.class)).thenReturn(agencyBankResponseList);
         List<AgencyBankResponse> response = service.findAll();
         Assertions.assertNotNull(response);
-        Assertions.assertEquals(response.size(), 1);
-        Assertions.assertEquals(response.get(0).getClass(), AgencyBankResponse.class);
+        Assertions.assertEquals(1, response.size());
+        Assertions.assertEquals(AgencyBankResponse.class, response.get(0).getClass());
         verify(repository, times(1)).findAll();
     }
 
@@ -167,8 +161,8 @@ class AgencyBankServiceTest {
         when(utils.mapEntityPageIntoDtoPage(agencyBankPage, AgencyBankResponse.class)).thenReturn(agencyBankResponsePage);
         Page<AgencyBankResponse> responses = service.findAllWithPageAndSearch("Vaticano", pageable);
         Assertions.assertNotNull(responses);
-        Assertions.assertEquals(responses.getTotalElements(), 1);
-        Assertions.assertEquals(responses.getSize(), 1);
+        Assertions.assertEquals(1, responses.getTotalElements());
+        Assertions.assertEquals(1, responses.getSize());
         verify(repository).findBySearch(anyString(), any(Pageable.class));
     }
 

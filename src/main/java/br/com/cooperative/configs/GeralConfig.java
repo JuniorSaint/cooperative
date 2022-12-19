@@ -14,12 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 
- @EnableJpaRepositories(basePackages = {"br.com.cooperative.repositories"})
- @EntityScan(basePackages = {"br.com.cooperative.models.entities"})
- @ComponentScan(basePackages = {"br.com.cooperative.controllers",
- 		"br.com.cooperative.services", "br.com.cooperative.configs",
- 		"br.com.cooperative.exceptions"
- })
+
 @Configuration
 public class GeralConfig {
 
