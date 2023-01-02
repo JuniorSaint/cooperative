@@ -3,9 +3,9 @@ package br.com.cooperative.models.entities;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
+//import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -17,7 +17,7 @@ import java.util.UUID;
 @Setter
 @Table(name = "role")
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
-public class Role implements GrantedAuthority, Serializable {
+public class Role implements  Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -27,8 +27,8 @@ public class Role implements GrantedAuthority, Serializable {
     @Column(unique = true, nullable = false)
     private String role;
 
-    @Override
-    public String getAuthority() {
-        return this.role;
-    }
+//    @Override
+//    public String getAuthority() {
+//        return this.role;
+//    }
 }

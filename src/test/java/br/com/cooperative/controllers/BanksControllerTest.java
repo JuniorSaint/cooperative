@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.mockito.InjectMocks;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,8 +29,7 @@ import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
 import static br.com.cooperative.mock.EntitiesMock.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -39,11 +39,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 class BanksControllerTest {
 
-    static String URL_BASIC = "/v1/banks/";
+    static String URL_BASIC = "/v1/banks";
     @InjectMocks
     private BanksController banksController;
     @Autowired
     private MockMvc mockMvc;
+    @MockBean
+    private ModelMapper mapper;
     @MockBean
     private BankService service;
     private Bank bank;
@@ -63,8 +65,9 @@ class BanksControllerTest {
     @DisplayName("Should save bank with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void save() throws Exception {
-        given(service.saveUpdate(any())).willReturn(bankResponse);
-        String jsonBody = new ObjectMapper().writeValueAsString(bankRequest);
+        when(mapper.map(any(), eq(Bank.class))).thenReturn(bank);
+        given(service.saveUpdate(any(Bank.class))).willReturn(bankResponse);
+        String jsonBody = new ObjectMapper().writeValueAsString(bank);
         ResultActions result =
                 mockMvc
                         .perform(post(URL_BASIC)
@@ -86,7 +89,7 @@ class BanksControllerTest {
         String jsonBody = new ObjectMapper().writeValueAsString(bankRequest);
         ResultActions result =
                 mockMvc
-                        .perform(put(URL_BASIC + "{id}", ID_EXIST)
+                        .perform(put(URL_BASIC + "/{id}", ID_EXIST)
                                 .content(jsonBody)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -115,7 +118,7 @@ class BanksControllerTest {
     void findById() throws Exception {
         given(service.findById(any())).willReturn(bankResponse);
         this.mockMvc
-                .perform(get(URL_BASIC + "{id}", ID_EXIST))
+                .perform(get(URL_BASIC + "/{id}", ID_EXIST))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
@@ -129,7 +132,7 @@ class BanksControllerTest {
     @EnabledForJreRange(min = JRE.JAVA_17)
     void delete() throws Exception {
         given(service.delete(any())).willReturn("Bank" + DELETE_MESSAGE);
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete(URL_BASIC + "{id}", ID_EXIST))
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete(URL_BASIC + "/{id}", ID_EXIST))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Bank" + DELETE_MESSAGE));
         verify(service, times(1)).delete(any());

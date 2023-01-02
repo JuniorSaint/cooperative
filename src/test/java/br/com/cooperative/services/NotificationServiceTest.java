@@ -1,6 +1,6 @@
 package br.com.cooperative.services;
 
-import br.com.cooperative.configs.Utils;
+import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.exceptions.BadRequestException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.NotificationResponse;
@@ -39,7 +39,7 @@ class NotificationServiceTest {
     @Mock
     private ModelMapper mapper;
     @Mock
-    private Utils utils;
+    private UsefulMethods utils;
     @Mock
     private UserRepository userRepository;
     private NotificationRequest notificationRequest;
@@ -72,9 +72,9 @@ class NotificationServiceTest {
     @DisplayName("Save - Should throw BadRequestException when body of message is null")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void saveShouldThrowExceptionBodyOfMessageIsNull() {
+        notification.setBody(null);
         BadRequestException response = Assertions.assertThrows(BadRequestException.class, () -> {
-            notificationRequest.setBody(null);
-            service.save(notificationRequest);
+              service.save(notification);
         });
         Assertions.assertEquals(response.getMessage(), "The body of message is not allowed null");
         verify(repository, never()).save(notification);
@@ -85,10 +85,9 @@ class NotificationServiceTest {
     @EnabledForJreRange(min = JRE.JAVA_17)
     void saveShouldSaveSuccessfully() {
         when(userRepository.findById(any())).thenReturn(Optional.of(USER));
-        when(mapper.map(any(), eq(Notification.class))).thenReturn(notification);
         when(mapper.map(any(), eq(NotificationResponse.class))).thenReturn(notificationResponse);
-        notificationRequest.setBody("Long text");
-        NotificationResponse response = service.save(notificationRequest);
+        notification.setBody("Long text");
+        NotificationResponse response = service.save(notification);
         Assertions.assertNotNull(response);
         verify(repository, atLeastOnce()).save(notification);
     }

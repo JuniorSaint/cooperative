@@ -1,10 +1,9 @@
 package br.com.cooperative.services;
 
-import br.com.cooperative.configs.Utils;
+import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.BankResponse;
 import br.com.cooperative.models.entities.Bank;
-import br.com.cooperative.models.request.BankRequest;
 import br.com.cooperative.repositories.BankRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +24,13 @@ public class BankService {
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private Utils utils;
+    private UsefulMethods utils;
 
     @Transactional
-    public BankResponse saveUpdate(BankRequest request) {
-        if (request.getId() != null) {
-            findById(request.getId());
-        }
-        return mapper.map(repository.save(mapper.map(request, Bank.class)), BankResponse.class);
+    public BankResponse saveUpdate(Bank entity) {
+       BankResponse verifyIfBankExist = entity.getId() != null ? findById(entity.getId()) : null;
+
+        return mapper.map(repository.save(entity), BankResponse.class);
     }
 
     @Transactional(readOnly = true)

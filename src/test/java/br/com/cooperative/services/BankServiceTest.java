@@ -1,6 +1,6 @@
 package br.com.cooperative.services;
 
-import br.com.cooperative.configs.Utils;
+import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.BankResponse;
 import br.com.cooperative.models.entities.Bank;
@@ -34,13 +34,14 @@ class BankServiceTest {
     @Mock
     private ModelMapper mapper;
     @Mock
-    private Utils utils;
+    private UsefulMethods utils;
     private Bank bank;
     private BankRequest bankRequest;
     private BankResponse bankResponse;
     private Pageable pageable;
     private List<Bank> listBank;
     private List<BankResponse> bankResponseList;
+    private Bank  bankUpdate;
 
     @BeforeEach
     void setUp() {
@@ -49,18 +50,28 @@ class BankServiceTest {
         bankRequest = BANK_REQUEST;
         listBank = List.of(bank);
         bankResponseList = List.of(bankResponse);
+        bankUpdate = BANK_UPDATE;
     }
 
     @Test
-    void saveUpdate() {
-        when(repository.findById(any())).thenReturn(Optional.of(bank));
-        when(mapper.map(any(), eq(Bank.class))).thenReturn(bank);
-        when(mapper.map(any(), eq(BankResponse.class))).thenReturn(bankResponse);
-        BankResponse response = service.saveUpdate(bankRequest);
-        Assertions.assertEquals(response.getClass(), BankResponse.class);
+    @DisplayName("Save - Should save with success")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void shouldSaveWithSuccess() {
+        BankResponse response = service.saveUpdate(bank);
         Assertions.assertNotNull(response.getId());
-        verify(repository, atLeastOnce()).save(any());
+        verify(repository).save(bank);
     }
+
+    @Test
+    @DisplayName("Update - Should update with success")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void shouldUpdateWithSuccess() {
+        when(repository.findById(any())).thenReturn(Optional.of(bankUpdate));
+        BankResponse response = service.saveUpdate(bankUpdate);
+        Assertions.assertNotNull(response.getId());
+        verify(repository, times(1)).save(bank);
+    }
+
 
     @Test
     @DisplayName("Find By Id - Should throw EntityNotFoundException")
@@ -72,7 +83,6 @@ class BankServiceTest {
         });
         Assertions.assertEquals(response.getMessage(), "Bank" + NOT_FOUND + "id: " + ID_EXIST);
         Assertions.assertEquals(response.getClass(), EntityNotFoundException.class);
-        verify(repository, times(1));
     }
 
     @Test
@@ -96,7 +106,7 @@ class BankServiceTest {
         Assertions.assertNotNull(responses);
         Assertions.assertNotNull(responses.get(0).getId());
         Assertions.assertEquals(responses.get(0).getClass(), BankResponse.class);
-        verify(repository, atLeastOnce()).findAll();
+        verify(repository, times(1)).findAll();
     }
 
     @Test

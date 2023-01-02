@@ -1,7 +1,7 @@
 package br.com.cooperative.services;
 
 import br.com.cooperative.configs.CP;
-import br.com.cooperative.configs.Utils;
+import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.MemberResponse;
 import br.com.cooperative.models.entities.Member;
@@ -34,17 +34,19 @@ class MemberServiceTest {
     @Mock
     private ModelMapper mapper;
     @Mock
-    private Utils utils;
+    private UsefulMethods utils;
     private Member member;
     private MemberRequest memberRequest;
     private MemberResponse memberResponse;
     private List<Member> memberList;
     private List<MemberResponse> memberResponseList;
     private PageImpl<MemberResponse> memberResponsePage;
+    private Member memberUpdate;
 
     @BeforeEach
     void setUp() {
         member = MEMBER;
+        memberUpdate = MEMBER_UPDATE;
         memberResponse = MEMBER_RESPONSE;
         memberRequest = MEMBER_REQUEST;
         memberList = List.of(member);
@@ -53,16 +55,23 @@ class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("Save and Update - Should save with success")
+    @DisplayName("Save - Should save with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void saveShouldSuccessfully() {
-        when(repository.findById(any())).thenReturn(Optional.of(member));
-        when(mapper.map(any(), eq(Member.class))).thenReturn(member);
         when(mapper.map(any(), eq(MemberResponse.class))).thenReturn(memberResponse);
-        MemberResponse response = service.saveUpdate(memberRequest);
+        MemberResponse response = service.saveUpdate(member);
         Assertions.assertNotNull(response);
-        Assertions.assertEquals(response.getClass(), MemberResponse.class);
-        verify(repository, atLeastOnce()).findById(any());
+        verify(repository, atLeastOnce()).save(member);
+    }
+    @Test
+    @DisplayName("Update - Should update with success")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void updateShouldSuccessfully() {
+        when(repository.findById(any())).thenReturn(Optional.of(member));
+        when(mapper.map(any(), eq(MemberResponse.class))).thenReturn(memberResponse);
+        MemberResponse response = service.saveUpdate(memberUpdate);
+        Assertions.assertNotNull(response);
+        verify(repository, atLeastOnce()).save(memberUpdate);
     }
 
     @Test

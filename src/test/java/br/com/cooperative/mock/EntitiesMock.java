@@ -21,10 +21,10 @@ public interface EntitiesMock {
     RoleRequest ROLE_REQUEST = RoleRequest.builder().id(ID_EXIST).role("ADMINISTRATOR").build();
     Role ROLE = Role.builder().id(ID_EXIST).role("ADMINISTRATOR").build();
     RoleResponse ROLE_RESPONSE = RoleResponse.builder().id(ID_EXIST).roles(Set.of()).build();
-    Cooperative COOPERATIVE_BRANCH = Cooperative.builder().id(ID_NO_EXIST).cooperativeType(CooperativeTypeEnum.valueOf("BRANCH")).name("Branch").build();
     CooperativeRequest COOPERATIVE_REQUEST_BRANCH = CooperativeRequest.builder().id(ID_NO_EXIST).build();
     Cooperative COOPERATIVE = Cooperative.builder().id(ID_EXIST).address(new Address()).cnpj("25.258.258/0001-20").contact(new Contact())
-            .name("Cooperativa dos Produtores Rurais de Carandaí").cooperativeType(CooperativeTypeEnum.valueOf("MATRIX")).matrix(COOPERATIVE_BRANCH).build();
+            .name("Cooperativa dos Produtores Rurais de Carandaí").cooperativeType(CooperativeTypeEnum.valueOf("MATRIX")).build();
+    Cooperative COOPERATIVE_BRANCH = Cooperative.builder().id(ID_NO_EXIST).cooperativeType(CooperativeTypeEnum.valueOf("BRANCH")).name("Branch").matrix(COOPERATIVE).build();
     CooperativeRequest COOPERATIVE_REQUEST = CooperativeRequest.builder().id(ID_EXIST).address(new Address()).cnpj("25.258.258/0001-20").contact(new Contact())
             .name("Cooperativa dos Produtores Rurais de Carandaí").cooperativeType(CooperativeTypeEnum.valueOf("MATRIX")).matrix(COOPERATIVE_REQUEST_BRANCH).build();
     CooperativeResponse COOPERATIVE_RESPONSE = CooperativeResponse.builder().id(ID_EXIST).address(new AddressResponse()).cnpj("25.258.258/0001-20").contact(new ContactResponse())
@@ -35,13 +35,16 @@ public interface EntitiesMock {
             .cooperative(COOPERATIVE_REQUEST).roles(List.of(ROLE_REQUEST)).build();
     UserResponse USER_RESPONSE = UserResponse.builder().id(ID_EXIST).userName("Jose").email("junior@junior.com").active(true).cpf("885.885.885-00").birthday(date)
             .cooperative(COOPERATIVE_RESPONSE).roles(List.of(ROLE_RESPONSE)).age(51).build();
-    Bank BANK = Bank.builder().id(ID_EXIST).code("5214").ispb("25456").cnpj("25.258.258/0001-20")
+    Bank BANK = Bank.builder().code("5214").ispb("25456").cnpj("25.258.258/0001-20")
+            .nameBank("Banco do Vaticano").url("vaticano@vaticano.com").build();
+    Bank BANK_UPDATE = Bank.builder().id(ID_EXIST).code("5214").ispb("25456").cnpj("25.258.258/0001-20")
             .nameBank("Banco do Vaticano").url("vaticano@vaticano.com").build();
     BankRequest BANK_REQUEST = BankRequest.builder().id(ID_EXIST).code("5214").ispb("25456").cnpj("25.258.258/0001-20")
             .nameBank("Banco do Vaticano").url("vaticano@vaticano.com").build();
     BankResponse BANK_RESPONSE = BankResponse.builder().id(ID_EXIST).code("5214").ispb("25456").cnpj("25.258.258/0001-20")
             .nameBank("Banco do Vaticano").url("vaticano@vaticano.com").build();
-    AgencyBank AGENCY_BANK = AgencyBank.builder().id(ID_EXIST).agency("Sucursal do Vaticano no Brasil").cnpj("25.258.258/0002-33").count("152462-2").active(true).bank(BANK).contact(CONTACT).address(ADDRESS).cooperative(COOPERATIVE).build();
+    AgencyBank AGENCY_BANK = AgencyBank.builder().agency("Sucursal do Vaticano no Brasil").cnpj("25.258.258/0002-33").count("152462-2").active(true).bank(BANK).contact(CONTACT).address(ADDRESS).cooperative(COOPERATIVE).build();
+    AgencyBank AGENCY_BANK_UPDATE = AgencyBank.builder().id(ID_EXIST).agency("Sucursal do Vaticano no Brasil").cnpj("25.258.258/0002-33").count("152462-2").active(true).bank(BANK).contact(CONTACT).address(ADDRESS).cooperative(COOPERATIVE).build();
     AgencyBankResponse AGENCY_BANK_RESPONSE = AgencyBankResponse.builder().id(ID_EXIST).agency("Sucursal do Vaticano no Brasil").cnpj("25.258.258/0002-33").count("152462-2").active(true).bank(BANK_RESPONSE).contact(CONTACT_RESPONSE).address(ADDRESS_RESPONSE).cooperative(COOPERATIVE_RESPONSE).build();
     AgencyBankRequest AGENCY_BANK_REQUEST = AgencyBankRequest.builder().id(ID_EXIST).agency("Sucursal do Vaticano no Brasil").cnpj("25.258.258/0002-33").count("152462-2").active(true).bank(BANK_REQUEST).contact(CONTACT_REQUEST).address(ADDRESS_REQUEST).cooperative(COOPERATIVE_REQUEST).build();
     Notification NOTIFICATION = Notification.builder().id(ID_EXIST).body("Long text").user(USER).wasRead(false).build();
@@ -52,7 +55,9 @@ public interface EntitiesMock {
     ParameterResponse PARAMETER_RESPONSE = ParameterResponse.builder().id(ID_EXIST).active(true).minimumLoanValue(1000.0).maximumLoanAmount(10000.0).build();
     ChangePasswordRequest CHANGE_PASSWORD_REQUEST = ChangePasswordRequest.builder().id(ID_EXIST).password("123456").build();
 
-    Member MEMBER = Member.builder().id(ID_EXIST).name("John Doe").cpfCnpj("888.222.555-22").address(ADDRESS)
+    Member MEMBER_UPDATE = Member.builder().id(ID_EXIST).name("John Doe").cpfCnpj("888.222.555-22").address(ADDRESS)
+            .cooperative(COOPERATIVE).father("João Ninguém").nacionality("Brasileira").contact(CONTACT).build();
+    Member MEMBER = Member.builder().name("John Doe").cpfCnpj("888.222.555-22").address(ADDRESS)
             .cooperative(COOPERATIVE).father("João Ninguém").nacionality("Brasileira").contact(CONTACT).build();
     MemberResponse MEMBER_RESPONSE = MemberResponse.builder().id(ID_EXIST).name("John Doe").cpfCnpj("888.222.555-22").address(ADDRESS)
             .cooperative(COOPERATIVE_RESPONSE).father("João Ninguém").nacionality("Brasileira").contact(CONTACT).build();

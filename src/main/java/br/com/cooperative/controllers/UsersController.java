@@ -1,20 +1,21 @@
 package br.com.cooperative.controllers;
 
+import br.com.cooperative.exceptions.BadRequestException;
 import br.com.cooperative.models.Response.UserResponse;
-import br.com.cooperative.models.request.ChangePasswordRequest;
+import br.com.cooperative.models.entities.User;
 import br.com.cooperative.models.request.UserRequest;
 import br.com.cooperative.services.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +27,8 @@ import java.util.UUID;
 public class UsersController {
     @Autowired
     private UserService service;
+    @Autowired
+    private ModelMapper mapper;
 
     @GetMapping
     public ResponseEntity<List<UserResponse>> findAllUsers() {
@@ -36,13 +39,13 @@ public class UsersController {
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> findById(@PathVariable(value = "id") UUID id) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(service.findById(id));
+                .body(mapper.map(service.findById(id), UserResponse.class));
     }
 
     @PostMapping
     public ResponseEntity<UserResponse> save(@RequestBody @Valid UserRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(service.save(request));
+                .body(service.save(mapper.map(request, User.class)));
     }
 
     @DeleteMapping("/{id}")
@@ -53,16 +56,20 @@ public class UsersController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<UserResponse> update(@RequestBody UserRequest request, @PathVariable(value = "id") UUID id) {
+        if(id.equals(null)){
+            throw new BadRequestException("In update id is mandatory");
+        }else{
         request.setId(id);
+        }
         return ResponseEntity.status(HttpStatus.OK)
-                .body(service.update(request));
+                .body(service.update(mapper.map(request, User.class)));
     }
 
-    @PutMapping(value = "/change-password", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> changePassowrd(@RequestBody ChangePasswordRequest request) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(service.changePassword(request));
-    }
+//    @PutMapping(value = "/change-password", consumes = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<String> changePassowrd(@RequestBody ChangePasswordRequest request) {
+//        return ResponseEntity.status(HttpStatus.OK)
+//                .body(service.changePassword(request));
+//    }
 
     @GetMapping("/seek")
     public ResponseEntity<Page<UserResponse>> findAllUserWithSearch(@RequestParam(value = "search", defaultValue = "") String search, Pageable pageable) {

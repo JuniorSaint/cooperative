@@ -1,10 +1,9 @@
 package br.com.cooperative.services;
 
-import br.com.cooperative.configs.Utils;
+import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.MemberResponse;
 import br.com.cooperative.models.entities.Member;
-import br.com.cooperative.models.request.MemberRequest;
 import br.com.cooperative.repositories.MemberRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +25,14 @@ public class MemberService {
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private Utils utils;
+    private UsefulMethods utils;
 
     @Transactional
-    public MemberResponse saveUpdate(MemberRequest request) {
-        if (request.getId() != null) {
-            findById(request.getId());
+    public MemberResponse saveUpdate(Member entity) {
+        if (entity.getId() != null) {
+            findById(entity.getId());
         }
-        return mapper.map(repository.save(mapper.map(request, Member.class)), MemberResponse.class);
+        return mapper.map(repository.save(entity), MemberResponse.class);
     }
 
     @Transactional(readOnly = true)

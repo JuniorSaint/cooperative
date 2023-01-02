@@ -1,12 +1,11 @@
 package br.com.cooperative.services;
 
-import br.com.cooperative.configs.Utils;
+import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.exceptions.BadRequestException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.AgencyBankResponse;
 import br.com.cooperative.models.entities.AgencyBank;
 import br.com.cooperative.models.entities.Bank;
-import br.com.cooperative.models.request.AgencyBankRequest;
 import br.com.cooperative.repositories.AgencyBankRepository;
 import br.com.cooperative.repositories.BankRepository;
 import org.modelmapper.ModelMapper;
@@ -32,26 +31,25 @@ public class AgencyBankService {
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private Utils utils;
+    private UsefulMethods utils;
 
     @Transactional
-    public AgencyBankResponse saveUpdate(AgencyBankRequest request) {
-        if (request.getId() != null) {
-            findById(request.getId());
+    public AgencyBankResponse saveUpdate(AgencyBank entity) {
+        if (entity.getId() != null) {
+            findById(entity.getId());
         }
-        if (request.getBank().getId() == null) {
+        if (entity.getBank() == null) {
             throw new BadRequestException("It's not allowed register an agency bank without bank");
         }
-        Optional<Bank> responseBank = bankRepository.findById(request.getBank().getId());
+        Optional<Bank> responseBank = bankRepository.findById(entity.getBank().getId());
         if (responseBank.isEmpty()) {
-            throw new EntityNotFoundException("Bank" + NOT_FOUND + " id:" + request.getBank().getId());
+            throw new EntityNotFoundException("Bank" + NOT_FOUND + " id:" + entity.getBank().getId());
         }
-        if (request.getCooperative() == null) {
+        if (entity.getCooperative() == null) {
             throw new BadRequestException("It's not allowed register an agency bank without a cooperative");
         }
-        AgencyBank agencyBank = mapper.map(request, AgencyBank.class);
-        responseBank.ifPresent(agencyBank::setBank);
-        return mapper.map(repository.save(agencyBank), AgencyBankResponse.class);
+        responseBank.ifPresent(entity::setBank);
+        return mapper.map(repository.save(entity), AgencyBankResponse.class);
     }
 
     @Transactional(readOnly = true)

@@ -1,11 +1,10 @@
 package br.com.cooperative.services;
 
-import br.com.cooperative.configs.Utils;
+import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.exceptions.BadRequestException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.CooperativeResponse;
 import br.com.cooperative.models.entities.Cooperative;
-import br.com.cooperative.models.enums.CooperativeTypeEnum;
 import br.com.cooperative.models.request.CooperativeRequest;
 import br.com.cooperative.repositories.CooperativeRepository;
 import org.junit.jupiter.api.*;
@@ -38,7 +37,7 @@ class CooperativeServiceTest {
     @Mock
     private ModelMapper mapper;
     @Mock
-    private Utils utils;
+    private UsefulMethods utils;
     private Cooperative cooperative;
     private CooperativeResponse cooperativeResponse;
     private CooperativeRequest cooperativeRequest;
@@ -47,6 +46,8 @@ class CooperativeServiceTest {
     private Pageable pageable;
     private PageImpl<Cooperative> cooperativePage;
     private PageImpl<CooperativeResponse> cooperativeResponsePage;
+    private Cooperative cooperativeBranch;
+
 
     @BeforeEach
     void setUp() {
@@ -56,17 +57,17 @@ class CooperativeServiceTest {
         cooperativeList = List.of(cooperative);
         cooperativeResponsePage = new PageImpl<>(List.of(cooperativeResponse));
         cooperativePage = new PageImpl<>(List.of(cooperative));
+        cooperativeBranch = COOPERATIVE_BRANCH;
     }
 
     @Test
     @DisplayName("Save - Should throw a BadRequestException when matrix is null")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void saveShouldSaveBadRequestExceptionWhenMatrixIsNull() {
-        when(repository.findById(any())).thenReturn(Optional.of(cooperative));
-        cooperativeRequest.setCooperativeType(CooperativeTypeEnum.valueOf("BRANCH"));
-        cooperativeRequest.setMatrix(null);
+        when(repository.findById(any())).thenReturn(Optional.of(cooperativeBranch));
+        cooperativeBranch.setMatrix(null);
         BadRequestException response = Assertions.assertThrows(BadRequestException.class, () -> {
-            service.saveUpdate(cooperativeRequest);
+            service.saveUpdate(cooperativeBranch);
         });
         Assertions.assertEquals(response.getClass(), BadRequestException.class);
       Assertions.assertEquals(response.getMessage(), "Matrix it's not allowed null, when is registering a branch");
@@ -77,51 +78,50 @@ class CooperativeServiceTest {
     @DisplayName("Save - Should throw a EntityNotFoundException when cooperative not found")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void saveShouldEntityNotFoundExceptionWhenCooperativeNotFound() {
-        when(repository.findById(any())).thenReturn(Optional.of(cooperative));
-        cooperativeRequest.setCooperativeType(CooperativeTypeEnum.valueOf("BRANCH"));
-        when(repository.findById(cooperativeRequest.getMatrix().getId())).thenReturn(Optional.empty());
+        when(repository.findById(any())).thenReturn(Optional.of(cooperativeBranch));
+        when(repository.findById(cooperativeBranch.getMatrix().getId())).thenReturn(Optional.empty());
         EntityNotFoundException response = Assertions.assertThrows(EntityNotFoundException.class, () -> {
-            service.saveUpdate(cooperativeRequest);
+            service.saveUpdate(cooperativeBranch);
         });
-        Assertions.assertEquals(response.getMessage(), "Matriz" + NOT_FOUND + " id: " + cooperativeRequest.getMatrix().getId());
-        verify(repository, never()).save(cooperative);
+        Assertions.assertEquals(response.getMessage(), "Matrix" + NOT_FOUND + " id: " + cooperativeBranch.getMatrix().getId());
+        verify(repository, never()).save(cooperativeBranch);
     }
 
     @Test
     @DisplayName("Save - Should throw a EntityNotFoundException when cooperative not found")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void saveShouldThrowBadRequestExceptionWhenMatrixEqualBranch() {
-        when(repository.findById(any())).thenReturn(Optional.of(cooperative));
-        cooperativeRequest.setCooperativeType(CooperativeTypeEnum.valueOf("BRANCH"));
-        when(repository.findById(cooperativeRequest.getMatrix().getId())).thenReturn(Optional.of(COOPERATIVE_BRANCH));
+        when(repository.findById(any())).thenReturn(Optional.of(cooperativeBranch));
+        when(repository.findById(cooperativeBranch.getMatrix().getId())).thenReturn(Optional.of(cooperativeBranch));
 
         BadRequestException response = Assertions.assertThrows(BadRequestException.class, () -> {
-            service.saveUpdate(cooperativeRequest);
+            service.saveUpdate(cooperativeBranch);
         });
         Assertions.assertEquals(response.getMessage(), "The matrix that you're trying to register is a branch. - Branch");
-        verify(repository, never()).save(cooperative);
+        verify(repository, never()).save(cooperativeBranch);
     }
 
     @Test
-    @DisplayName("Save - Should set matrix in cooperative with success")
+    @DisplayName("Save - Should save a cooperative with success Branch")
     @EnabledForJreRange(min = JRE.JAVA_17)
-    void saveShouldSetMatrixInCooperativeWithSuccess() {
+    void saveShouldSaveWithSuccessBranch() {
+        when(repository.findById(any())).thenReturn(Optional.of(cooperativeBranch));
         when(repository.findById(any())).thenReturn(Optional.of(cooperative));
-        when(mapper.map(any(), eq(Cooperative.class))).thenReturn(cooperative);
-        cooperative.setMatrix(cooperative);
-        CooperativeResponse response = service.saveUpdate(cooperativeRequest);
-        verify(repository, atLeastOnce()).save(cooperative);
-    }
-
-    @Test
-    @DisplayName("Save - Should save a cooperative with success")
-    @EnabledForJreRange(min = JRE.JAVA_17)
-    void saveShouldSaveWithSuccess() {
-        when(repository.findById(any())).thenReturn(Optional.of(cooperative));
-        cooperativeRequest.setCooperativeType(CooperativeTypeEnum.valueOf("MATRIX"));
-        when(mapper.map(any(), eq(Cooperative.class))).thenReturn(cooperative);
+        cooperativeBranch.setMatrix(cooperative);
         when(mapper.map(any(), eq(CooperativeResponse.class))).thenReturn(cooperativeResponse);
-        CooperativeResponse response = service.saveUpdate(cooperativeRequest);
+        CooperativeResponse response = service.saveUpdate(cooperativeBranch);
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(response.getClass(), CooperativeResponse.class);
+        verify(repository, atLeastOnce()).save(cooperativeBranch);
+    }
+
+    @Test
+    @DisplayName("Save - Should save a cooperative with success Matrix")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void saveShouldSaveWithSuccessMatrix() {
+        cooperative.setId(null);
+        when(mapper.map(any(), eq(CooperativeResponse.class))).thenReturn(cooperativeResponse);
+        CooperativeResponse response = service.saveUpdate(cooperative);
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getClass(), CooperativeResponse.class);
         verify(repository, atLeastOnce()).save(cooperative);
@@ -136,7 +136,6 @@ class CooperativeServiceTest {
         });
         Assertions.assertEquals(resp.getClass(), EntityNotFoundException.class);
         Assertions.assertEquals(resp.getMessage(), "Cooperative" + NOT_FOUND + "id: " + ID_EXIST);
-    verify(repository, atLeastOnce()).findById(any());
     }
     @Test
     @DisplayName("findAllListed - Should fetch listed all cooperatives with success")

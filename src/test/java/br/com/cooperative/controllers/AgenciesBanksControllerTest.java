@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.mockito.InjectMocks;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,11 +40,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 class AgenciesBanksControllerTest {
-    static String URL_BASIC = "/v1/agencies-banks/";
+    static String URL_BASIC = "/v1/agencies-banks";
     @InjectMocks
     private AgenciesBanksController agenciesBanksController;
     @Autowired
     private MockMvc mockMvc;
+    @MockBean
+    private ModelMapper mapper;
     @MockBean
     private AgencyBankService service;
     private AgencyBank agencyBank;
@@ -64,7 +67,7 @@ class AgenciesBanksControllerTest {
     @EnabledForJreRange(min = JRE.JAVA_17)
     void save() throws Exception {
         given(service.saveUpdate(any())).willReturn(agencyBankResponse);
-        String jsonBody = new ObjectMapper().writeValueAsString(agencyBankRequest);
+        String jsonBody = new ObjectMapper().writeValueAsString(agencyBank);
         ResultActions result =
                 mockMvc
                         .perform(post(URL_BASIC)
@@ -86,7 +89,7 @@ class AgenciesBanksControllerTest {
         String jsonBody = new ObjectMapper().writeValueAsString(agencyBankRequest);
         ResultActions result =
                 mockMvc
-                        .perform(put(URL_BASIC + "{id}", ID_EXIST)
+                        .perform(put(URL_BASIC + "/{id}", ID_EXIST)
                                 .content(jsonBody)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -115,7 +118,7 @@ class AgenciesBanksControllerTest {
     void findById() throws Exception {
         given(service.findById(any())).willReturn(agencyBankResponse);
         this.mockMvc
-                .perform(get(URL_BASIC + "{id}", ID_EXIST))
+                .perform(get(URL_BASIC + "/{id}", ID_EXIST))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
@@ -129,7 +132,7 @@ class AgenciesBanksControllerTest {
     @EnabledForJreRange(min = JRE.JAVA_17)
     void delete() throws Exception {
         given(service.delete(any())).willReturn("Agency bank" + DELETE_MESSAGE);
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete(URL_BASIC + "{id}", ID_EXIST))
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete(URL_BASIC + "/{id}", ID_EXIST))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Agency bank" + DELETE_MESSAGE));
         verify(service, times(1)).delete(any());
@@ -141,7 +144,7 @@ class AgenciesBanksControllerTest {
     void findAllUserWithSearch() throws Exception {
         given(service.findAllWithPageAndSearch(any(), (Pageable) any())).willReturn(agencyBankPage);
         this.mockMvc
-                .perform(get(URL_BASIC + "seek"))
+                .perform(get(URL_BASIC + "/seek"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))

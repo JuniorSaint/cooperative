@@ -1,10 +1,13 @@
 package br.com.cooperative.models.entities;
 
 
+import br.com.cooperative.configs.UsefulMethods;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
 import lombok.*;
-import javax.persistence.*;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -18,6 +21,8 @@ import java.util.UUID;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Address implements Serializable {
     private static final long serialVersionUID = 1L;
+    @Autowired
+    private UsefulMethods usefulMethods;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -32,7 +37,7 @@ public class Address implements Serializable {
         if (zipCode == null) {
             this.zipCode = zipCode;
         } else {
-            this.zipCode = zipCode.replaceAll("\\D", "");
+            this.zipCode = usefulMethods.justNumberAllowed(zipCode);
         }
     }
 }

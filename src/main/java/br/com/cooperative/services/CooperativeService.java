@@ -1,11 +1,10 @@
 package br.com.cooperative.services;
 
-import br.com.cooperative.configs.Utils;
+import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.exceptions.BadRequestException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.CooperativeResponse;
 import br.com.cooperative.models.entities.Cooperative;
-import br.com.cooperative.models.request.CooperativeRequest;
 import br.com.cooperative.repositories.CooperativeRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,28 +27,27 @@ public class CooperativeService {
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private Utils utils;
+    private UsefulMethods utils;
 
     @Transactional
-    public CooperativeResponse saveUpdate(CooperativeRequest request) {
-        if (request.getId() != null) {
-            findById(request.getId());
+    public CooperativeResponse saveUpdate(Cooperative entity) {
+        if (entity.getId() != null) {
+            findById(entity.getId());
         }
-        Cooperative cooperative = mapper.map(request, Cooperative.class);
-        if (request.getCooperativeType().toString().equals("BRANCH")) {
-            if (request.getMatrix() == null) {
+        if (entity.getCooperativeType().toString().equals("BRANCH")) {
+            if (entity.getMatrix() == null) {
                 throw new BadRequestException("Matrix it's not allowed null, when is registering a branch");
             }
-            Optional<Cooperative> response = repository.findById(request.getMatrix().getId());
+            Optional<Cooperative> response = repository.findById(entity.getMatrix().getId());
             if (response.isEmpty()) {
-                throw new EntityNotFoundException("Matriz" + NOT_FOUND + " id: " + request.getMatrix().getId());
+                throw new EntityNotFoundException("Matrix" + NOT_FOUND + " id: " + entity.getMatrix().getId());
             }
             if (response.get().getCooperativeType().toString().equals("BRANCH")) {
                 throw new BadRequestException("The matrix that you're trying to register is a branch. - " + response.get().getName());
             }
-            cooperative.setMatrix(response.get());
+            entity.setMatrix(response.get());
         }
-        return mapper.map(repository.save(cooperative), CooperativeResponse.class);
+        return mapper.map(repository.save(entity), CooperativeResponse.class);
     }
 
     @Transactional(readOnly = true)

@@ -1,12 +1,14 @@
 package br.com.cooperative.models.entities;
 
+import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.models.enums.CooperativeTypeEnum;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Set;
 import java.util.UUID;
@@ -21,6 +23,8 @@ import java.util.UUID;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Cooperative implements Serializable {
     private static final long serialVersionUID = 1L;
+    @Autowired
+    private UsefulMethods usefulMethods;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -61,7 +65,7 @@ public class Cooperative implements Serializable {
         if (cnpj == null) {
             this.cnpj = cnpj;
         } else {
-            this.cnpj = cnpj.replaceAll("\\D", "");
+            this.cnpj = usefulMethods.justNumberAllowed(cnpj);
         }
     }
 }

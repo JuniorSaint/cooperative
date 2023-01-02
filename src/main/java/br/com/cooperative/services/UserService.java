@@ -1,14 +1,12 @@
 package br.com.cooperative.services;
 
 import br.com.cooperative.configs.CP;
-import br.com.cooperative.configs.Utils;
+import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.exceptions.BadRequestException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.UserResponse;
 import br.com.cooperative.models.entities.Role;
 import br.com.cooperative.models.entities.User;
-import br.com.cooperative.models.request.ChangePasswordRequest;
-import br.com.cooperative.models.request.UserRequest;
 import br.com.cooperative.repositories.CooperativeRepository;
 import br.com.cooperative.repositories.RoleRepository;
 import br.com.cooperative.repositories.UserRepository;
@@ -16,9 +14,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +24,7 @@ import java.util.UUID;
 import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService   {
     @Autowired
     private UserRepository repository;
     @Autowired
@@ -39,57 +34,55 @@ public class UserService implements UserDetailsService {
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private Utils utils;
-    @Autowired
-    public PasswordEncoder passwordEncoder;
+    private UsefulMethods utils;
+//    @Autowired
+//    public PasswordEncoder passwordEncoder;
 
-    @Override
-    @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String email) {
-        Optional<User> user = repository.findByEmail(email);
-        if (user.isEmpty()) {
-            throw new EntityNotFoundException("User " + CP.NOT_FOUND + " email: " + email);
-        }
-        return mapper.map(user.get(), UserDetails.class);
-    }
+//    @Override
+//    @Transactional(readOnly = true)
+//    public UserDetails loadUserByUsername(String email) {
+//        Optional<User> user = repository.findByEmail(email);
+//        if (user.isEmpty()) {
+//            throw new EntityNotFoundException("User " + CP.NOT_FOUND + " email: " + email);
+//        }
+//        return mapper.map(user.get(), UserDetails.class);
+//    }
 
 
     @Transactional
-    public UserResponse save(UserRequest request) {
-        if (repository.existsByEmail(request.getEmail())) {
+    public UserResponse save(User entity) {
+        if (repository.existsByEmail(entity.getEmail())) {
             throw new BadRequestException(
-                    "Already exist user with this email: " + request.getEmail() + ", try with another one");
+                    "Already exist user with this email: " + entity.getEmail() + ", try with another one");
         }
-        if (request.getCooperative() == null) {
+        if (entity.getCooperative() == null) {
             throw new BadRequestException("Cooperative not informed, it's not allowed user without a cooperative");
         }
-        verifyIfCooperativeExist(request.getCooperative().getId());
-        request.setPassword(passwordEncoder.encode(request.getPassword()));
-        return mapper.map(repository.save(mapper.map(request, User.class)), UserResponse.class);
+        verifyIfCooperativeExist(entity.getCooperative().getId());
+//        entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+        return mapper.map(repository.save(entity), UserResponse.class);
     }
 
     @Transactional
-    public UserResponse update(UserRequest request) {
-        Optional<User> searchForUser = repository.findByEmail(request.getEmail());
+    public UserResponse update(User entity) {
+        Optional<User> searchForUser = repository.findByEmail(entity.getEmail());
         if (searchForUser.isEmpty()) {
-            throw new EntityNotFoundException("User" + CP.NOT_FOUND + " email: " + request.getEmail());
+            throw new EntityNotFoundException("User" + CP.NOT_FOUND + " email: " + entity.getEmail());
         }
-        if (request.getCooperative() == null) {
+        if (entity.getCooperative() == null) {
             throw new BadRequestException("Cooperative not informed, it's not allowed user without a cooperative");
         }
-        verifyIfCooperativeExist(request.getCooperative().getId());
-        User userEntity = new User();
-        mapper.map(request, userEntity);
-        userEntity.setPassword(searchForUser.get().getPassword());
-        return mapper.map(repository.save(userEntity), UserResponse.class);
+        verifyIfCooperativeExist(entity.getCooperative().getId());
+        entity.setPassword(searchForUser.get().getPassword());
+        return mapper.map(repository.save(entity), UserResponse.class);
     }
 
-    public String changePassword(ChangePasswordRequest request) {
-        User user = mapper.map(findById(request.getId()), User.class);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        repository.save(user);
-        return "The password was changed with success of the user: " + user.getEmail();
-    }
+//    public String changePassword(ChangePasswordRequest request) {
+//        User user = findById(request.getId());
+//        user.setPassword(passwordEncoder.encode(request.getPassword()));
+//        repository.save(user);
+//        return "The password was changed with success of the user: " + user.getEmail();
+//    }
 
     @Transactional
     public String delete(UUID id) {
@@ -98,12 +91,12 @@ public class UserService implements UserDetailsService {
         return "User" + DELETE_MESSAGE;
     }
 
-    public UserResponse findById(UUID id) {
+    public User findById(UUID id) {
         Optional<User> response = repository.findById(id);
         if (response.isEmpty()) {
             throw new EntityNotFoundException("User" + CP.NOT_FOUND + " id:" + id);
         }
-        return mapper.map(response.get(), UserResponse.class);
+        return response.get();
     }
 
     public Page<UserResponse> findAllWithPageAndSearch(String search, Pageable pageable) {

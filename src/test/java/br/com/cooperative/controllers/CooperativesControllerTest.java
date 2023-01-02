@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.mockito.InjectMocks;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,11 +40,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 class CooperativesControllerTest {
-    static String URL_BASIC = "/v1/cooperatives/";
+    static String URL_BASIC = "/v1/cooperatives";
     @InjectMocks
     private CooperativesController cooperativesController;
     @Autowired
     private MockMvc mockMvc;
+    @MockBean
+    private ModelMapper modelMapper;
     @MockBean
     private CooperativeService service;
     private Cooperative cooperative;
@@ -87,7 +90,7 @@ class CooperativesControllerTest {
         String jsonBody = new ObjectMapper().writeValueAsString(cooperativeRequest);
         ResultActions result =
                 mockMvc
-                        .perform(put(URL_BASIC + "{id}", ID_EXIST)
+                        .perform(put(URL_BASIC + "/{id}", ID_EXIST)
                                 .content(jsonBody)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -116,7 +119,7 @@ class CooperativesControllerTest {
     void findById() throws Exception {
         given(service.findById(any())).willReturn(cooperativeResponse);
         this.mockMvc
-                .perform(get(URL_BASIC + "{id}", ID_EXIST))
+                .perform(get(URL_BASIC + "/{id}", ID_EXIST))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
@@ -130,7 +133,7 @@ class CooperativesControllerTest {
     @EnabledForJreRange(min = JRE.JAVA_17)
     void delete() throws Exception {
         given(service.delete(any())).willReturn("Bank" + DELETE_MESSAGE);
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete(URL_BASIC + "{id}", ID_EXIST))
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete(URL_BASIC + "/{id}", ID_EXIST))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Bank" + DELETE_MESSAGE));
         verify(service, times(1)).delete(any());

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.mockito.InjectMocks;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,11 +42,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 class NotificationsControllerTest {
-    static String URL_BASIC = "/v1/notifications/";
+    static String URL_BASIC = "/v1/notifications";
     @InjectMocks
     private NotificationsController notificationsController;
     @Autowired
     private MockMvc mockMvc;
+    @MockBean
+    private ModelMapper mapper;
     @MockBean
     private NotificationService service;
     private Notification notification;
@@ -99,7 +102,7 @@ class NotificationsControllerTest {
     void findById() throws Exception {
         given(service.findById(any())).willReturn(notificationResponse);
         this.mockMvc
-                .perform(get(URL_BASIC + "{id}", ID_EXIST))
+                .perform(get(URL_BASIC + "/{id}", ID_EXIST))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
@@ -113,7 +116,7 @@ class NotificationsControllerTest {
     @EnabledForJreRange(min = JRE.JAVA_17)
     void delete() throws Exception {
         given(service.delete(any())).willReturn("Bank" + DELETE_MESSAGE);
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete(URL_BASIC + "{id}", ID_EXIST))
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete(URL_BASIC + "/{id}", ID_EXIST))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Bank" + DELETE_MESSAGE));
         verify(service, times(1)).delete(any());

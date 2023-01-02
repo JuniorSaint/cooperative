@@ -4,14 +4,11 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 
 
@@ -24,10 +21,10 @@ public class GeralConfig {
         return modelMapper;
     }
 
-     @Bean
-     public PasswordEncoder encoder() {
-         return new BCryptPasswordEncoder();
-     }
+//     @Bean
+//     public PasswordEncoder encoder() {
+//         return new BCryptPasswordEncoder();
+//     }
 
     @Primary
     @Bean

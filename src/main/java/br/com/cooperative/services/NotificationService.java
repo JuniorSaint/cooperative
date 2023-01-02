@@ -1,6 +1,6 @@
 package br.com.cooperative.services;
 
-import br.com.cooperative.configs.Utils;
+import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.exceptions.BadRequestException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.MailResponse;
@@ -8,7 +8,6 @@ import br.com.cooperative.models.Response.NotificationResponse;
 import br.com.cooperative.models.entities.Notification;
 import br.com.cooperative.models.entities.User;
 import br.com.cooperative.models.request.MailRequest;
-import br.com.cooperative.models.request.NotificationRequest;
 import br.com.cooperative.repositories.NotificationRepository;
 import br.com.cooperative.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -30,7 +29,7 @@ public class NotificationService {
     private NotificationRepository repository;
 
     @Autowired
-    private Utils utils;
+    private UsefulMethods utils;
 
     @Autowired
     private MailService service;
@@ -42,11 +41,11 @@ public class NotificationService {
     private ModelMapper mapper;
 
     @Transactional
-    public NotificationResponse save(NotificationRequest request) {
-        if(request.getBody() == null){
+    public NotificationResponse save(Notification entity) {
+        if(entity.getBody() == null){
             throw new BadRequestException("The body of message is not allowed null");
         }
-        NotificationResponse response = mapper.map(repository.save(mapper.map(request, Notification.class)), NotificationResponse.class);
+        NotificationResponse response = mapper.map(repository.save(entity), NotificationResponse.class);
 //        sendEmailAfterSaveNotification(response.getUser().getId());
         return response;
     }
@@ -87,7 +86,7 @@ public class NotificationService {
     private void sendEmailAfterSaveNotification(UUID id){
         User user = userRepository.findById(id).get();
         var mailRequest = new MailRequest();
-        mailRequest.setName(user.getUsername());
+//        mailRequest.setName(user.getUsername());
         mailRequest.setTo("junior.sendemail@gmail.com");
         mailRequest.setFrom(user.getEmail());
         mailRequest.setSubject("Envio de notificação");

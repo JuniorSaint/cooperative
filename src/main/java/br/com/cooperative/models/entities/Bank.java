@@ -1,11 +1,13 @@
 package br.com.cooperative.models.entities;
 
+import br.com.cooperative.configs.UsefulMethods;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.RepresentationModel;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 import java.util.UUID;
@@ -20,6 +22,8 @@ import java.util.UUID;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Bank extends RepresentationModel<Bank> implements Serializable {
     private static final long serialVersionUID = 1L;
+    @Autowired
+    private UsefulMethods usefulMethods;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,11 +37,11 @@ public class Bank extends RepresentationModel<Bank> implements Serializable {
     @OneToMany(mappedBy = "bank")
     private Set<AgencyBank> agencyBanks;
 
-//    public void setCnpj(String cnpj) {
-//        if (cnpj == null) {
-//            this.cnpj = cnpj;
-//        } else {
-//            this.cnpj = cnpj.replaceAll("\\D", "");
-//        }
-//    }
+    public void setCnpj(String cnpj) {
+        if (cnpj == null) {
+            this.cnpj = cnpj;
+        } else {
+            this.cnpj = usefulMethods.justNumberAllowed(cnpj);
+        }
+    }
 }

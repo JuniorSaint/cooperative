@@ -10,14 +10,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Configuration
-public class Utils {
+public class UsefulMethods {
     @Autowired
     private ModelMapper mapper;
-    public  <D, T> Page<D> mapEntityPageIntoDtoPage(Page<T> entities, Class<D> dtoClass) {
+
+    public <D, T> Page<D> mapEntityPageIntoDtoPage(Page<T> entities, Class<D> dtoClass) {
         return entities.map(objectEntity -> mapper.map(objectEntity, dtoClass));
     }
 
-   public <S, T> List<T> mapListIntoDtoList(List<S> source, Class<T> targetClass) {
+    public <S, T> List<T> mapListIntoDtoList(List<S> source, Class<T> targetClass) {
         return source
                 .stream()
                 .map(element -> mapper.map(element, targetClass))
@@ -25,8 +26,12 @@ public class Utils {
     }
 
 
-    public <T> Page<T> convertListIntoPage(List<T> source){
-     return new PageImpl<>(source);
+    public <T> Page<T> convertListIntoPage(List<T> source) {
+        return new PageImpl<>(source);
+    }
+
+    public String justNumberAllowed(String str) {
+        return str.replaceAll("\\d+", "");
     }
 
 }

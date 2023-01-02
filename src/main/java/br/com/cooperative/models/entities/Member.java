@@ -1,18 +1,20 @@
 package br.com.cooperative.models.entities;
 
+import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.models.enums.GenderTypeEnum;
 import br.com.cooperative.models.enums.MaritalStatusEnum;
 import br.com.cooperative.models.enums.PersonTypeEnum;
 import br.com.cooperative.models.enums.PropertyRegimeEnum;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.RepresentationModel;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -29,6 +31,8 @@ import java.util.UUID;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Member extends RepresentationModel<Member> implements Serializable {
     private static final long serialVersionUID = 1L;
+    @Autowired
+    private UsefulMethods usefulMethods;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -81,7 +85,7 @@ public class Member extends RepresentationModel<Member> implements Serializable 
         if (cpfCnpj == null) {
             this.cpfCnpj = cpfCnpj;
         } else {
-            this.cpfCnpj = cpfCnpj.replaceAll("\\D", "");
+            this.cpfCnpj = usefulMethods.justNumberAllowed(cpfCnpj);
         }
     }
 }
