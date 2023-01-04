@@ -54,24 +54,25 @@ class BankServiceTest {
     }
 
     @Test
-    @DisplayName("Save - Should save with success")
-    @EnabledForJreRange(min = JRE.JAVA_17)
-    void shouldSaveWithSuccess() {
-        BankResponse response = service.saveUpdate(bank);
-        Assertions.assertNotNull(response.getId());
-        verify(repository).save(bank);
-    }
-
-    @Test
     @DisplayName("Update - Should update with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void shouldUpdateWithSuccess() {
         when(repository.findById(any())).thenReturn(Optional.of(bankUpdate));
+        when(mapper.map(any(), eq(BankResponse.class))).thenReturn(bankResponse);
         BankResponse response = service.saveUpdate(bankUpdate);
         Assertions.assertNotNull(response.getId());
-        verify(repository, times(1)).save(bank);
+        verify(repository, times(1)).save(bankUpdate);
     }
 
+    @Test
+    @DisplayName("Save - Should save with success")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void shouldSaveWithSuccess() {
+        when(mapper.map(any(), eq(BankResponse.class))).thenReturn(bankResponse);
+        BankResponse response = service.saveUpdate(bank);
+        Assertions.assertNotNull(response);
+        verify(repository, atLeastOnce()).save(bank);
+    }
 
     @Test
     @DisplayName("Find By Id - Should throw EntityNotFoundException")

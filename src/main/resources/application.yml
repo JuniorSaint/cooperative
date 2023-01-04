@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/cooperative
+    username: postgres
+    password: m2166446
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    # Config about circular reference
+  main:
+    allow-circular-references: true
+   # Server configuration
+server:
+  port: 8080
+
+jwt:
+  secrety_key: 4B6250655367566B5970337336763979244226452948404D635166546A576E5A

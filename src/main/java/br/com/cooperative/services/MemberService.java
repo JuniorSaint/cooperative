@@ -25,7 +25,7 @@ public class MemberService {
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private UsefulMethods utils;
+    private UsefulMethods usefulMethods;
 
     @Transactional
     public MemberResponse saveUpdate(Member entity) {
@@ -45,7 +45,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public List<MemberResponse> findAll() {
-        return utils.mapListIntoDtoList(repository.findAll(), MemberResponse.class);
+        return usefulMethods.mapListIntoDtoList(repository.findAll(), MemberResponse.class);
     }
 
     @Transactional

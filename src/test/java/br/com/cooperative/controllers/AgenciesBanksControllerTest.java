@@ -37,8 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @AutoConfigureMockMvc
-@SpringBootTest
 @Transactional
+@SpringBootTest
 class AgenciesBanksControllerTest {
     static String URL_BASIC = "/v1/agencies-banks";
     @InjectMocks

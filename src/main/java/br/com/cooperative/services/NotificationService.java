@@ -3,11 +3,8 @@ package br.com.cooperative.services;
 import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.exceptions.BadRequestException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
-import br.com.cooperative.models.Response.MailResponse;
 import br.com.cooperative.models.Response.NotificationResponse;
 import br.com.cooperative.models.entities.Notification;
-import br.com.cooperative.models.entities.User;
-import br.com.cooperative.models.request.MailRequest;
 import br.com.cooperative.repositories.NotificationRepository;
 import br.com.cooperative.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -18,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
 import static br.com.cooperative.configs.CP.NOT_FOUND;
@@ -29,10 +28,10 @@ public class NotificationService {
     private NotificationRepository repository;
 
     @Autowired
-    private UsefulMethods utils;
+    private UsefulMethods usefulMethods;
 
-    @Autowired
-    private MailService service;
+//    @Autowired
+//    private MailService service;
 
     @Autowired
     private UserRepository userRepository;
@@ -50,12 +49,12 @@ public class NotificationService {
         return response;
     }
 
-    public MailResponse sendEmail(MailRequest request) {
-        Map<String, Object> model = new HashMap<>();
-        model.put("Name", request.getName());
-        model.put("deliveryTime", LocalDate.now());
-        return service.sendEmail(request, model);
-    }
+//    public MailResponse sendEmail(MailRequest request) {
+//        Map<String, Object> model = new HashMap<>();
+//        model.put("Name", request.getName());
+//        model.put("deliveryTime", LocalDate.now());
+//        return service.sendEmail(request, model);
+//    }
 
     @Transactional(readOnly = true)
     public NotificationResponse findById(UUID id) {
@@ -68,12 +67,12 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public List<NotificationResponse> findAll() {
-        return utils.mapListIntoDtoList(repository.findAll(), NotificationResponse.class);
+        return usefulMethods.mapListIntoDtoList(repository.findAll(), NotificationResponse.class);
     }
 
     @Transactional(readOnly = true)
     public Page<NotificationResponse> findAllWithPageAndSearch(UUID idUser, Boolean wasRead, LocalDate dateInicial, LocalDate dateFinal, Pageable pageable) {
-        return utils.mapEntityPageIntoDtoPage(repository.findNotificatioin(idUser, wasRead, dateInicial, dateFinal, pageable), NotificationResponse.class);
+        return usefulMethods.mapEntityPageIntoDtoPage(repository.findNotificatioin(idUser, wasRead, dateInicial, dateFinal, pageable), NotificationResponse.class);
     }
 
     @Transactional
@@ -83,13 +82,13 @@ public class NotificationService {
         return "Notification" + DELETE_MESSAGE;
     }
 
-    private void sendEmailAfterSaveNotification(UUID id){
-        User user = userRepository.findById(id).get();
-        var mailRequest = new MailRequest();
-//        mailRequest.setName(user.getUsername());
-        mailRequest.setTo("junior.sendemail@gmail.com");
-        mailRequest.setFrom(user.getEmail());
-        mailRequest.setSubject("Envio de notificação");
-        sendEmail(mailRequest);
-    }
+//    private void sendEmailAfterSaveNotification(UUID id){
+//        User user = userRepository.findById(id).get();
+//        var mailRequest = new MailRequest();
+////        mailRequest.setName(user.getUsername());
+//        mailRequest.setTo("junior.sendemail@gmail.com");
+//        mailRequest.setFrom(user.getEmail());
+//        mailRequest.setSubject("Envio de notificação");
+//        sendEmail(mailRequest);
+//    }
 }

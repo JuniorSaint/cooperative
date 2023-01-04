@@ -1,10 +1,12 @@
 package br.com.cooperative.services;
 
+import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.exceptions.BadRequestException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.AgencyBankResponse;
 import br.com.cooperative.models.entities.AgencyBank;
 import br.com.cooperative.models.entities.Bank;
+import br.com.cooperative.models.entities.Cooperative;
 import br.com.cooperative.repositories.AgencyBankRepository;
 import br.com.cooperative.repositories.BankRepository;
 import org.junit.jupiter.api.*;
@@ -14,8 +16,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static br.com.cooperative.configs.CP.NOT_FOUND;
@@ -34,10 +40,16 @@ class AgencyBankServiceTest {
     private BankRepository bankRepository;
     @Mock
     private ModelMapper mapper;
+    @Mock
+    private UsefulMethods usefulMethods;
     private AgencyBank agencyBankSave;
     private AgencyBank agencyBankUpdate;
     private AgencyBankResponse agencyBankResponse;
     private Bank bank;
+    private Cooperative cooperative;
+    private Pageable pageable;
+    private PageImpl<AgencyBank> agencyBankPage;
+    private PageImpl<AgencyBankResponse> agencyBankResponsePage;
 
 
     @BeforeEach
@@ -46,6 +58,9 @@ class AgencyBankServiceTest {
         agencyBankSave = AGENCY_BANK;
         agencyBankResponse = AGENCY_BANK_RESPONSE;
         bank = BANK_UPDATE;
+        cooperative = COOPERATIVE;
+        agencyBankPage = new PageImpl<>(List.of(agencyBankUpdate));
+        agencyBankResponsePage = new PageImpl<>(List.of(agencyBankResponse));
     }
 
     @Test
@@ -65,6 +80,7 @@ class AgencyBankServiceTest {
     @DisplayName("Save - Should throw EntityNotFoundException when bank not found")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void shouldThrowEntityNotFoundExceptionWhenBankNotFound() {
+        when(repository.findById(any())).thenReturn(Optional.of(agencyBankUpdate));
         agencyBankUpdate.setBank(bank);
         when(bankRepository.findById(any())).thenReturn(Optional.empty());
         EntityNotFoundException response = Assertions.assertThrows(EntityNotFoundException.class, () -> {
@@ -78,6 +94,7 @@ class AgencyBankServiceTest {
     @DisplayName("Save - Should Throw BadRequestException When Cooperative Is Null")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void shouldThrowBadRequestExceptionWhenCooperativeIsNull() {
+        when(repository.findById(any())).thenReturn(Optional.of(agencyBankUpdate));
         when(bankRepository.findById(any())).thenReturn(Optional.of(bank));
         agencyBankUpdate.setCooperative(null);
         BadRequestException response = Assertions.assertThrows(BadRequestException.class, () -> {
@@ -86,32 +103,56 @@ class AgencyBankServiceTest {
         Assertions.assertEquals(response.getMessage(), "It's not allowed register an agency bank without a cooperative");
         verify(repository, never()).save(agencyBankUpdate);
     }
+
     @Test
     @DisplayName("Save - Should save with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void shouldSaveWithSuccess() {
         when(bankRepository.findById(any())).thenReturn(Optional.of(bank));
-        agencyBankUpdate.setCooperative(null);
-        BadRequestException response = Assertions.assertThrows(BadRequestException.class, () -> {
-            service.saveUpdate(agencyBankUpdate);
-        });
-        Assertions.assertEquals(response.getMessage(), "It's not allowed register an agency bank without a cooperative");
-        verify(repository, never()).save(agencyBankUpdate);
+        agencyBankSave.setCooperative(cooperative);
+        agencyBankSave.setBank(bank);
+        when(mapper.map(any(), eq(AgencyBankResponse.class))).thenReturn(agencyBankResponse);
+        AgencyBankResponse response = service.saveUpdate(agencyBankSave);
+        Assertions.assertNotNull(response);
+        verify(repository, atLeastOnce()).save(agencyBankSave);
     }
 
     @Test
+    @DisplayName("Find By Id - Should Throw EntityNotFoundException When Agency not found")
+    @EnabledForJreRange(min = JRE.JAVA_17)
     void findById() {
+        when(repository.findById(any())).thenReturn(Optional.empty());
+        EntityNotFoundException response = Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            service.findById(any());
+        });
+        Assertions.assertEquals(response.getMessage(), "Agency bank" + NOT_FOUND + "id: " + null);
+        Assertions.assertEquals(response.getClass(), EntityNotFoundException.class);
     }
 
     @Test
     void findAll() {
+        when(usefulMethods.mapListIntoDtoList(any(), eq(AgencyBankResponse.class))).thenReturn(List.of(agencyBankResponse));
+        List<AgencyBankResponse> response = service.findAll();
+        Assertions.assertNotNull(response);
+        verify(repository).findAll();
     }
 
     @Test
     void findAllWithPageAndSearch() {
+        when(repository.findBySearch(anyString(), eq(pageable))).thenReturn(agencyBankPage);
+        when(usefulMethods.mapEntityPageIntoDtoPage(agencyBankPage, AgencyBankResponse.class)).thenReturn(agencyBankResponsePage);
+        Page<AgencyBankResponse> response = service.findAllWithPageAndSearch("Vaticano", pageable);
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(response.getTotalElements(), 1);
+        Assertions.assertEquals(response.getSize(), 1);
     }
 
     @Test
+    @DisplayName("Delete - Should delete an object with success")
+    @EnabledForJreRange(min = JRE.JAVA_17)
     void delete() {
+        when(repository.findById(any())).thenReturn(Optional.of(agencyBankUpdate));
+        Assertions.assertDoesNotThrow(() -> service.delete(any()));
+        verify(repository, times(1)).deleteById(any());
     }
 }

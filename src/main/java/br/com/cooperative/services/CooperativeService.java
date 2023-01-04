@@ -27,7 +27,7 @@ public class CooperativeService {
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private UsefulMethods utils;
+    private UsefulMethods usefulMethods;
 
     @Transactional
     public CooperativeResponse saveUpdate(Cooperative entity) {
@@ -60,12 +60,12 @@ public class CooperativeService {
 
     @Transactional(readOnly = true)
     public List<CooperativeResponse> findAll() {
-        return utils.mapListIntoDtoList(repository.findAll(), CooperativeResponse.class);
+        return usefulMethods.mapListIntoDtoList(repository.findAll(), CooperativeResponse.class);
     }
 
     @Transactional(readOnly = true)
     public Page<CooperativeResponse> findAllWithPageAndSearch(String search, Pageable pageable) {
-        return utils.mapEntityPageIntoDtoPage(repository.findBySearch(search.trim(), pageable), CooperativeResponse.class);
+        return usefulMethods.mapEntityPageIntoDtoPage(repository.findBySearch(search.trim(), pageable), CooperativeResponse.class);
     }
 
     @Transactional

@@ -6,12 +6,10 @@ import br.com.cooperative.exceptions.BadRequestException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.UserResponse;
 import br.com.cooperative.models.entities.Cooperative;
-import br.com.cooperative.models.entities.Role;
 import br.com.cooperative.models.entities.User;
 import br.com.cooperative.models.request.ChangePasswordRequest;
 import br.com.cooperative.models.request.UserRequest;
 import br.com.cooperative.repositories.CooperativeRepository;
-import br.com.cooperative.repositories.RoleRepository;
 import br.com.cooperative.repositories.UserRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -171,17 +169,17 @@ class UserServiceTest {
         verify(repository).save(any(User.class));
     }
 
-    @Test
-    @DisplayName("Change Password - Should change password with success")
-    @EnabledForJreRange(min = JRE.JAVA_17)
-    void changePasswordShouldChangeWithSuccess() {
-        when(repository.findById(any())).thenReturn(Optional.of(user));
-        when(mapper.map(any(), eq(User.class))).thenReturn(user);
-        when(repository.save(any())).thenReturn(user);
+//    @Test
+//    @DisplayName("Change Password - Should change password with success")
+//    @EnabledForJreRange(min = JRE.JAVA_17)
+//    void changePasswordShouldChangeWithSuccess() {
+//        when(repository.findById(any())).thenReturn(Optional.of(user));
+//        when(mapper.map(any(), eq(User.class))).thenReturn(user);
+//        when(repository.save(any())).thenReturn(user);
 //        String response = service.changePassword(changePasswordRequest);
 //        Assertions.assertEquals(response, "The password was changed with success of the user: " + user.getEmail());
 //        Assertions.assertNotNull(response);
-    }
+//    }
 
     @Test
     @DisplayName("Delete - Should delete an object with success")

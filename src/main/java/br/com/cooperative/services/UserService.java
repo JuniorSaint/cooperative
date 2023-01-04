@@ -5,10 +5,8 @@ import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.exceptions.BadRequestException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.UserResponse;
-import br.com.cooperative.models.entities.Role;
 import br.com.cooperative.models.entities.User;
 import br.com.cooperative.repositories.CooperativeRepository;
-import br.com.cooperative.repositories.RoleRepository;
 import br.com.cooperative.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,24 +28,9 @@ public class UserService   {
     @Autowired
     private CooperativeRepository cooperativeRepository;
     @Autowired
-    private RoleRepository permissionRepository;
-    @Autowired
     private ModelMapper mapper;
     @Autowired
-    private UsefulMethods utils;
-//    @Autowired
-//    public PasswordEncoder passwordEncoder;
-
-//    @Override
-//    @Transactional(readOnly = true)
-//    public UserDetails loadUserByUsername(String email) {
-//        Optional<User> user = repository.findByEmail(email);
-//        if (user.isEmpty()) {
-//            throw new EntityNotFoundException("User " + CP.NOT_FOUND + " email: " + email);
-//        }
-//        return mapper.map(user.get(), UserDetails.class);
-//    }
-
+    private UsefulMethods usefulMethods;
 
     @Transactional
     public UserResponse save(User entity) {
@@ -100,12 +83,11 @@ public class UserService   {
     }
 
     public Page<UserResponse> findAllWithPageAndSearch(String search, Pageable pageable) {
-        List<Role> role = (search.isBlank()) ? null : permissionRepository.findAllByRole(search.trim());
-        return utils.mapEntityPageIntoDtoPage(repository.findBySearch(search.trim(), role, pageable), UserResponse.class);
+        return usefulMethods.mapEntityPageIntoDtoPage(repository.findBySearch(search.trim(), pageable), UserResponse.class);
     }
 
     public List<UserResponse> findAllListed() {
-        return utils.mapListIntoDtoList(repository.findAll(), UserResponse.class);
+        return usefulMethods.mapListIntoDtoList(repository.findAll(), UserResponse.class);
     }
 
     private boolean verifyIfCooperativeExist(UUID id) {

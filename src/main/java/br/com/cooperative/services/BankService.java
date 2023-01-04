@@ -24,7 +24,7 @@ public class BankService {
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private UsefulMethods utils;
+    private UsefulMethods usefulMethods;
 
     @Transactional
     public BankResponse saveUpdate(Bank entity) {
@@ -43,7 +43,7 @@ public class BankService {
 
     @Transactional(readOnly = true)
     public List<BankResponse> findAll() {
-        return utils.mapListIntoDtoList(repository.findAll(), BankResponse.class);
+        return usefulMethods.mapListIntoDtoList(repository.findAll(), BankResponse.class);
     }
 
     @Transactional

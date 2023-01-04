@@ -1,5 +1,6 @@
 package br.com.cooperative.services;
 
+
 import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.exceptions.BadRequestException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
@@ -31,7 +32,7 @@ public class AgencyBankService {
     @Autowired
     private ModelMapper mapper;
     @Autowired
-    private UsefulMethods utils;
+    private UsefulMethods usefulMethods;
 
     @Transactional
     public AgencyBankResponse saveUpdate(AgencyBank entity) {
@@ -63,12 +64,12 @@ public class AgencyBankService {
 
     @Transactional(readOnly = true)
     public List<AgencyBankResponse> findAll() {
-        return utils.mapListIntoDtoList(repository.findAll(), AgencyBankResponse.class);
+        return usefulMethods.mapListIntoDtoList(repository.findAll(), AgencyBankResponse.class);
     }
 
     @Transactional(readOnly = true)
     public Page<AgencyBankResponse> findAllWithPageAndSearch(String search, Pageable pageable) {
-        return utils.mapEntityPageIntoDtoPage(repository.findBySearch(search.trim(), pageable), AgencyBankResponse.class);
+        return usefulMethods.mapEntityPageIntoDtoPage(repository.findBySearch(search.trim(), pageable), AgencyBankResponse.class);
     }
 
     @Transactional
