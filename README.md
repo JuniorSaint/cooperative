@@ -1,11 +1,10 @@
 ## cooperative
-# Portfólio back-end com Spring Boot
+# Portfólio back-end with Spring Boot
 
-Projeto usado para colocar em prática meus conhecimentos nas tecnologias:
+Project used to put into practice my knowledge in technologies:
 
     Spring Boot
     Junit5 
     REST
     Swagger
     postgres
-
