@@ -1,10 +1,11 @@
 package br.com.cooperative.models.request;
 
 
+import br.com.cooperative.models.entities.Role;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Builder
@@ -21,6 +22,7 @@ public class UserRequest implements  Serializable {
     private String password;
     private Boolean active;
     private String cpf;
-    private List<RoleRequest> roles;
+    private Set<Role> roles;
     private CooperativeRequest cooperative;
+    private String imageFileName;
 }

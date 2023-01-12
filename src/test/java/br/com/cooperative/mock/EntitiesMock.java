@@ -18,9 +18,10 @@ public interface EntitiesMock {
     Address ADDRESS = Address.builder().street("Rua Belo Monte").number("152C").complemente("Altar").city("Fictício").uf("MG").zipCode("36.258-250").build();
     AddressRequest ADDRESS_REQUEST = AddressRequest.builder().street("Rua Belo Monte").number("152C").complemente("Altar").city("Fictício").uf("MG").zipCode("36.258-250").build();
     AddressResponse ADDRESS_RESPONSE = AddressResponse.builder().street("Rua Belo Monte").number("152C").complemente("Altar").city("Fictício").uf("MG").zipCode("36.258-250").build();
-    RoleRequest ROLE_REQUEST = RoleRequest.builder().id(ID_EXIST).role("ADMINISTRATOR").build();
-    Role ROLE = Role.builder().id(ID_EXIST).role("ADMINISTRATOR").build();
-    RoleResponse ROLE_RESPONSE = RoleResponse.builder().id(ID_EXIST).roles(Set.of()).build();
+    RoleRequest ROLE_REQUEST = RoleRequest.builder().id(ID_EXIST).role("ADMIN").build();
+    Role ROLE = Role.builder().id(ID_EXIST).role("ADMIN").build();
+
+    RoleResponse ROLE_RESPONSE = RoleResponse.builder().id(ID_EXIST).role("ADMIN").build();
     CooperativeRequest COOPERATIVE_REQUEST_BRANCH = CooperativeRequest.builder().id(ID_NO_EXIST).build();
     Cooperative COOPERATIVE = Cooperative.builder().id(ID_EXIST).address(new Address()).cnpj("25.258.258/0001-20").contact(new Contact())
             .name("Cooperativa dos Produtores Rurais de Carandaí").cooperativeType(CooperativeTypeEnum.valueOf("MATRIX")).build();
@@ -30,11 +31,11 @@ public interface EntitiesMock {
     CooperativeResponse COOPERATIVE_RESPONSE = CooperativeResponse.builder().id(ID_EXIST).address(new AddressResponse()).cnpj("25.258.258/0001-20").contact(new ContactResponse())
             .name("Cooperativa dos Produtores Rurais de Carandaí").cooperativeType(CooperativeTypeEnum.valueOf("MATRIX")).build();
     User USER = User.builder().id(ID_EXIST).userName("Jose").email("junior@junior.com").password("123456").active(true).cpf("885.885.885-00")
-            .cooperative(COOPERATIVE).birthday(date).roles(List.of(ROLE)).build();
+            .cooperative(COOPERATIVE).birthday(date).build();
     UserRequest USER_REQUEST = UserRequest.builder().id(ID_EXIST).userName("Jose").email("junior@junior.com").password("123456").active(true).cpf("885.885.885-00")
-            .cooperative(COOPERATIVE_REQUEST).roles(List.of(ROLE_REQUEST)).build();
+            .cooperative(COOPERATIVE_REQUEST).roles(Set.of(ROLE)).build();
     UserResponse USER_RESPONSE = UserResponse.builder().id(ID_EXIST).userName("Jose").email("junior@junior.com").active(true).cpf("885.885.885-00").birthday(date)
-            .cooperative(COOPERATIVE_RESPONSE).roles(List.of(ROLE_RESPONSE)).age(51).build();
+            .cooperative(COOPERATIVE_RESPONSE).roles(Set.of(ROLE)).age(51).build();
     Bank BANK = Bank.builder().code("5214").ispb("25456").cnpj("25.258.258/0001-20")
             .nameBank("Banco do Vaticano").url("vaticano@vaticano.com").build();
     Bank BANK_UPDATE = Bank.builder().id(ID_EXIST).code("5214").ispb("25456").cnpj("25.258.258/0001-20")

@@ -86,12 +86,24 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity<StandardError> dataBaseException(DataBaseException e, HttpServletRequest request) {
         StandardError err = new StandardError();
         err.setTimestamp(timeStamp);
+        err.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        err.setError("Data base exception");
+        err.setMessage(e.getMessage());
+        err.setPath(request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
+    }
+
+    @ExceptionHandler(FileStorageException.class)
+    public final ResponseEntity<StandardError> fileStorageException(FileStorageException e, HttpServletRequest request) {
+        StandardError err = new StandardError();
+        err.setTimestamp(timeStamp);
         err.setStatus(HttpStatus.BAD_REQUEST.value());
         err.setError("Data base exception");
         err.setMessage(e.getMessage());
         err.setPath(request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
+
 //    @ExceptionHandler(NotAuthorizateException.class)
 //    public final ResponseEntity<StandardError> dataBaseException(NotAuthorizateException e, HttpServletRequest request) {
 //        StandardError err = new StandardError();

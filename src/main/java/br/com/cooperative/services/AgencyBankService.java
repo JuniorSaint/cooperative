@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
@@ -42,24 +41,22 @@ public class AgencyBankService {
         if (entity.getBank() == null) {
             throw new BadRequestException("It's not allowed register an agency bank without bank");
         }
-        Optional<Bank> responseBank = bankRepository.findById(entity.getBank().getId());
-        if (responseBank.isEmpty()) {
-            throw new EntityNotFoundException("Bank" + NOT_FOUND + " id:" + entity.getBank().getId());
-        }
+
+        Bank responseBank = bankRepository.findById(entity.getBank().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Bank" + NOT_FOUND + " id:" + entity.getBank().getId()));
+
         if (entity.getCooperative() == null) {
             throw new BadRequestException("It's not allowed register an agency bank without a cooperative");
         }
-        responseBank.ifPresent(entity::setBank);
+        entity.setBank(responseBank);
         return mapper.map(repository.save(entity), AgencyBankResponse.class);
     }
 
     @Transactional(readOnly = true)
     public AgencyBankResponse findById(UUID id) {
-        Optional<AgencyBank> response = repository.findById(id);
-        if (response.isEmpty()) {
-            throw new EntityNotFoundException("Agency bank" + NOT_FOUND + "id: " + id);
-        }
-        return mapper.map(response.get(), AgencyBankResponse.class);
+        return repository.findById(id)
+                .map(response -> mapper.map(response, AgencyBankResponse.class))
+                .orElseThrow(() -> new EntityNotFoundException("Agency bank" + NOT_FOUND + "id: " + id));
     }
 
     @Transactional(readOnly = true)

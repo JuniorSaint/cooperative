@@ -27,11 +27,11 @@ public class SecurityConfig {
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                .authorizeRequests(auth -> {
+                .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/v1/authentication/**").permitAll();
-                    auth.requestMatchers("/v1/notifications/**").authenticated();
-                    auth.requestMatchers("/v1/members/**", "/v1/members/**", "/v1/agencies-banks/**").authenticated();
-                    auth.requestMatchers("/v1/users/**", "/v1/cooperatives/**").authenticated();
+                    auth.requestMatchers("/v1/notifications/**", "/v1/members/**", "/v1/agencies-banks/**",
+                            "/v1/banks/**", "/v1/cooperatives/**").hasAnyAuthority("USER", "ADMIN");
+                    auth.requestMatchers( "/v1/users/**").hasAuthority("ADMIN");
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

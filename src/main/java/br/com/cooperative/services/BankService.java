@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
@@ -28,17 +27,16 @@ public class BankService {
 
     @Transactional
     public BankResponse saveUpdate(Bank entity) {
-       BankResponse verifyIfBankExist = entity.getId() != null ? findById(entity.getId()) : null;
+        BankResponse verifyIfBankExist = entity.getId() != null ? findById(entity.getId()) : null;
 
         return mapper.map(repository.save(entity), BankResponse.class);
     }
 
     @Transactional(readOnly = true)
     public BankResponse findById(UUID id) {
-        Optional<Bank> response = repository.findById(id);
-        if (response.isEmpty())
-            throw new EntityNotFoundException("Bank" + NOT_FOUND + "id: " + id);
-        return mapper.map(response.get(), BankResponse.class);
+        return repository.findById(id)
+                .map(result -> mapper.map(result, BankResponse.class))
+                .orElseThrow(() -> new EntityNotFoundException("Bank" + NOT_FOUND + "id: " + id));
     }
 
     @Transactional(readOnly = true)

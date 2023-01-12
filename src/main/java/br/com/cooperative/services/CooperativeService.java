@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
@@ -38,24 +37,22 @@ public class CooperativeService {
             if (entity.getMatrix() == null) {
                 throw new BadRequestException("Matrix it's not allowed null, when is registering a branch");
             }
-            Optional<Cooperative> response = repository.findById(entity.getMatrix().getId());
-            if (response.isEmpty()) {
-                throw new EntityNotFoundException("Matrix" + NOT_FOUND + " id: " + entity.getMatrix().getId());
+            Cooperative responseCooperative = repository.findById(entity.getMatrix().getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Matrix" + NOT_FOUND + " id: " + entity.getMatrix().getId()));
+
+            if (responseCooperative.getCooperativeType().toString().equals("BRANCH")) {
+                throw new BadRequestException("The matrix that you're trying to register is a branch. - " + responseCooperative.getName());
             }
-            if (response.get().getCooperativeType().toString().equals("BRANCH")) {
-                throw new BadRequestException("The matrix that you're trying to register is a branch. - " + response.get().getName());
-            }
-            entity.setMatrix(response.get());
+            entity.setMatrix(responseCooperative);
         }
         return mapper.map(repository.save(entity), CooperativeResponse.class);
     }
 
     @Transactional(readOnly = true)
     public CooperativeResponse findById(UUID id) {
-        Optional<Cooperative> response = repository.findById(id);
-        if (response.isEmpty())
-            throw new EntityNotFoundException("Cooperative" + NOT_FOUND + "id: " + id);
-        return mapper.map(response.get(), CooperativeResponse.class);
+        return repository.findById(id)
+                .map(result -> mapper.map(result, CooperativeResponse.class))
+                .orElseThrow(() -> new EntityNotFoundException("Cooperative" + NOT_FOUND + "id: " + id));
     }
 
     @Transactional(readOnly = true)

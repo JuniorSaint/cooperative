@@ -40,20 +40,17 @@ class UserServiceTest {
     private UserRepository repository;
     @Mock
     private CooperativeRepository cooperativeRepository;
-    @Mock
-    private RoleRepository permissionRepository;
+
     @Mock
     private ModelMapper mapper;
     @Mock
     private UsefulMethods utils;
-//    @Mock
-//    private PasswordEncoder passwordEncoder;
+
     private UserRequest userRequest;
     private UserResponse userResponse;
     private List<UserResponse> userResponseList;
     private List<User> userList;
     private Cooperative cooperative;
-    private Role role;
     private ChangePasswordRequest changePasswordRequest;
     private User user;
     private PageImpl<User> userPage;
@@ -68,7 +65,6 @@ class UserServiceTest {
         cooperative = COOPERATIVE;
         changePasswordRequest = CHANGE_PASSWORD_REQUEST;
         userPage = new PageImpl<>(List.of(user));
-        role = ROLE;
         userResponsePage = new PageImpl<>(List.of(userResponse));
         userResponseList = List.of(userResponse);
         userList = List.of(user);
@@ -219,14 +215,13 @@ class UserServiceTest {
     @DisplayName("Find all Pageable - Should fetch all pageable and filtered successfully")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findAllWithPageAndSearch() {
-        when(permissionRepository.findAllByRole(anyString())).thenReturn(List.of(role));
-        when(repository.findBySearch(anyString(), anyList(), eq(pageable))).thenReturn(userPage);
+        when(repository.findBySearch(anyString(), eq(pageable))).thenReturn(userPage);
         when(utils.mapEntityPageIntoDtoPage(userPage, UserResponse.class)).thenReturn(userResponsePage);
         Page<UserResponse> responses = service.findAllWithPageAndSearch("Jose", pageable);
         Assertions.assertEquals(responses.getTotalElements(), 1);
         Assertions.assertEquals(responses.getSize(), 1);
-        verify(repository).findBySearch(anyString(), anyList(), any(Pageable.class));
-        verify(repository, times(1)).findBySearch(anyString(), anyList(), any(Pageable.class));
+        verify(repository).findBySearch(anyString(), any(Pageable.class));
+        verify(repository, times(1)).findBySearch(anyString(), any(Pageable.class));
     }
 
     @Test

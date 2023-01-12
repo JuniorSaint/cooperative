@@ -6,13 +6,12 @@ import java.io.Serializable;
 import java.util.UUID;
 
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class RoleRequest implements Serializable {
     private static final long serialVersionUID = 1L;
-
     private UUID id;
     private String role;
 }

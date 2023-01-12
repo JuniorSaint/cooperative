@@ -1,6 +1,6 @@
 # cooperative
 
-### Portfólio back-end with Spring Boot
+### Portfolio back-end with Spring Boot
 
 Project used to put into practice my knowledge in technologies:
 

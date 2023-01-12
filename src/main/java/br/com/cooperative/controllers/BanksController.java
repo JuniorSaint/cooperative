@@ -34,7 +34,7 @@ public class BanksController {
 
     @PutMapping("/{id}")
     public ResponseEntity<BankResponse> update(@RequestBody @Valid BankRequest request, @PathVariable(value = "id") UUID id) {
-        if (request.getId().equals(null)) {
+        if (id == null) {
             throw new BadRequestException("Id in update is mandatory");
         } else {
             request.setId(id);
@@ -56,7 +56,7 @@ public class BanksController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable(value = "id") UUID id) throws Exception {
+    public ResponseEntity<String> delete(@PathVariable(value = "id") UUID id)  {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.delete(id));
     }

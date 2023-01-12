@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
@@ -30,9 +29,6 @@ public class NotificationService {
     @Autowired
     private UsefulMethods usefulMethods;
 
-//    @Autowired
-//    private MailService service;
-
     @Autowired
     private UserRepository userRepository;
 
@@ -41,7 +37,7 @@ public class NotificationService {
 
     @Transactional
     public NotificationResponse save(Notification entity) {
-        if(entity.getBody() == null){
+        if (entity.getBody() == null) {
             throw new BadRequestException("The body of message is not allowed null");
         }
         NotificationResponse response = mapper.map(repository.save(entity), NotificationResponse.class);
@@ -58,11 +54,9 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public NotificationResponse findById(UUID id) {
-        Optional<Notification> response = repository.findById(id);
-        if (response.isEmpty()) {
-            throw new EntityNotFoundException("Notification" + NOT_FOUND + "id: " + id);
-        }
-        return mapper.map(response.get(), NotificationResponse.class);
+        return repository.findById(id)
+                .map(result -> mapper.map(result, NotificationResponse.class))
+                .orElseThrow(() -> new EntityNotFoundException("Notification" + NOT_FOUND + "id: " + id));
     }
 
     @Transactional(readOnly = true)

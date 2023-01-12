@@ -1,13 +1,14 @@
 package br.com.cooperative.models.Response;
 
 
+import br.com.cooperative.models.entities.Role;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Builder
@@ -24,11 +25,11 @@ public class UserResponse implements Serializable {
     private String email;
     private Boolean active;
     private String cpf;
-
     private LocalDate birthday;
-    private List<RoleResponse> roles;
+    private Set<Role> roles;
     private CooperativeResponse cooperative;
     private Integer age;
+    private String imageFileName;
 
 
     private Integer calculateAge(LocalDate birthday) {

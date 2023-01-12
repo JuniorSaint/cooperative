@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
@@ -37,10 +36,9 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberResponse findById(UUID id) {
-        Optional<Member> response = repository.findById(id);
-        if (response.isEmpty())
-            throw new EntityNotFoundException("Member" + NOT_FOUND + "id: " + id);
-        return mapper.map(response.get(), MemberResponse.class);
+        return repository.findById(id)
+                .map(result -> mapper.map(result, MemberResponse.class))
+                .orElseThrow(() ->new EntityNotFoundException("Member" + NOT_FOUND + "id: " + id));
     }
 
     @Transactional(readOnly = true)

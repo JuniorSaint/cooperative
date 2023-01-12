@@ -37,7 +37,7 @@ public class AgenciesBanksController {
     @PutMapping("/{id}")
     public ResponseEntity<AgencyBankResponse> update(@RequestBody @Valid AgencyBankRequest request, @PathVariable(value = "id") UUID id) {
         if(id.equals(null)){
-            throw new BadRequestException("Id in update is madatory");
+            throw new BadRequestException("Id in update is mandatory");
         }else {
         request.setId(id);
         }
@@ -63,7 +63,7 @@ public class AgenciesBanksController {
                     .body(service.delete(id));
     }
 
-    @GetMapping("/seek")
+    @GetMapping("/seek/{search}")
     public ResponseEntity<Page<AgencyBankResponse>> findAllAgencyBankWithSearch(@RequestParam(value = "search", defaultValue = "") String search, Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.findAllWithPageAndSearch(search, pageable));

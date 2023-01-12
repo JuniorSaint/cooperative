@@ -1,6 +1,5 @@
 package br.com.cooperative.models.entities;
 
-import br.com.cooperative.models.enums.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
@@ -14,9 +13,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Builder
 @Entity
@@ -38,6 +36,7 @@ public class User implements UserDetails, Serializable {
     private LocalDate birthday;
     private Boolean active;
     private String cpf;
+    private String imageFileName;
     @CreationTimestamp
     private Instant createdAt;
     @UpdateTimestamp
@@ -48,23 +47,30 @@ public class User implements UserDetails, Serializable {
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications;
 
-    @Enumerated(EnumType.STRING)
-    private RoleEnum roles;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
+
 
     @ManyToOne
     @JoinColumn(name = "cooperative_id", nullable = false)
     private Cooperative cooperative;
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(roles.name()));
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getRole()))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public String getUsername() {
         return this.email;
     }
+
     @Override
     public String getPassword() {
         return this.password;
