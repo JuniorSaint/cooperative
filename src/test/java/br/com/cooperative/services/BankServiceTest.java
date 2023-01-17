@@ -41,7 +41,7 @@ class BankServiceTest {
     private Pageable pageable;
     private List<Bank> listBank;
     private List<BankResponse> bankResponseList;
-    private Bank  bankUpdate;
+    private Bank bankUpdate;
 
     @BeforeEach
     void setUp() {
@@ -64,15 +64,6 @@ class BankServiceTest {
         verify(repository, times(1)).save(bankUpdate);
     }
 
-    @Test
-    @DisplayName("Save - Should save with success")
-    @EnabledForJreRange(min = JRE.JAVA_17)
-    void shouldSaveWithSuccess() {
-        when(mapper.map(any(), eq(BankResponse.class))).thenReturn(bankResponse);
-        BankResponse response = service.saveUpdate(bank);
-        Assertions.assertNotNull(response);
-        verify(repository, atLeastOnce()).save(bank);
-    }
 
     @Test
     @DisplayName("Find By Id - Should throw EntityNotFoundException")
@@ -109,13 +100,26 @@ class BankServiceTest {
         Assertions.assertEquals(responses.get(0).getClass(), BankResponse.class);
         verify(repository, times(1)).findAll();
     }
+    @Test
+    @DisplayName("Delete - Should throw EntityNotFoundException")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void deleteShouldThrowEntityNotFoundException() {
+        when(repository.findById(any())).thenReturn(Optional.empty());
+        EntityNotFoundException response = Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            service.delete(any());
+        });
+        Assertions.assertEquals(response.getClass(),EntityNotFoundException.class);
+        verify(repository, never()).deleteById(any());
+    }
 
     @Test
     @DisplayName("Delete - Should delete an object with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void delete() {
         when(repository.findById(any())).thenReturn(Optional.of(bank));
-        Assertions.assertDoesNotThrow(() -> service.delete(any()));
+        String response = Assertions.assertDoesNotThrow(() -> service.delete(any()));
+        Assertions.assertNotNull(response);
         verify(repository).deleteById(any());
     }
+
 }

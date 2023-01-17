@@ -24,6 +24,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
 import static br.com.cooperative.configs.CP.NOT_FOUND;
 import static br.com.cooperative.mock.EntitiesMock.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,9 +69,9 @@ class AgencyBankServiceTest {
     @EnabledForJreRange(min = JRE.JAVA_17)
     void shouldThrowBadRequestExceptionWhenBankIsNull() {
         when(repository.findById(any())).thenReturn(Optional.of(agencyBankUpdate));
-        agencyBankUpdate.setBank(null);
+        agencyBankSave.setBank(null);
         BadRequestException response = Assertions.assertThrows(BadRequestException.class, () -> {
-            service.saveUpdate(agencyBankUpdate);
+            service.saveUpdate(agencyBankSave);
         });
         Assertions.assertEquals(response.getMessage(), "It's not allowed register an agency bank without bank");
         verify(repository, never()).save(agencyBankUpdate);
@@ -120,13 +121,22 @@ class AgencyBankServiceTest {
     @Test
     @DisplayName("Find By Id - Should Throw EntityNotFoundException When Agency not found")
     @EnabledForJreRange(min = JRE.JAVA_17)
-    void findById() {
+    void findByIdShoudThowEntityNotFoundException() {
         when(repository.findById(any())).thenReturn(Optional.empty());
         EntityNotFoundException response = Assertions.assertThrows(EntityNotFoundException.class, () -> {
             service.findById(any());
         });
         Assertions.assertEquals(response.getMessage(), "Agency bank" + NOT_FOUND + "id: " + null);
         Assertions.assertEquals(response.getClass(), EntityNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("Find By Id - Should fetch an agency bank with success")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void findByIdFetchWithSuccess() {
+        when(repository.findById(any())).thenReturn(Optional.of(agencyBankUpdate));
+        AgencyBankResponse response = service.findById(any());
+        Assertions.assertNotNull(response.getId());
     }
 
     @Test
@@ -152,7 +162,19 @@ class AgencyBankServiceTest {
     @EnabledForJreRange(min = JRE.JAVA_17)
     void delete() {
         when(repository.findById(any())).thenReturn(Optional.of(agencyBankUpdate));
-        Assertions.assertDoesNotThrow(() -> service.delete(any()));
+        String response =  service.delete(any());
+        Assertions.assertEquals(response, "Agency bank" + DELETE_MESSAGE, response);
         verify(repository, times(1)).deleteById(any());
+    }
+    @Test
+    @DisplayName("Delete - Should throw EntityNotFoundException")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void deleteShouldThrowEntityNotFoundException() {
+        when(repository.findById(any())).thenReturn(Optional.empty());
+        EntityNotFoundException response = Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            service.delete(any());
+        });
+        Assertions.assertEquals(response.getClass(), EntityNotFoundException.class);
+        verify(repository, never()).deleteById(any());
     }
 }

@@ -46,7 +46,8 @@ public class BankService {
 
     @Transactional
     public String delete(UUID id) {
-        findById(id);
+        repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Bank" + NOT_FOUND + "id: " + id));
         repository.deleteById(id);
         return "Bank" + DELETE_MESSAGE;
     }

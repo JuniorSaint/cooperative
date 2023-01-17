@@ -38,7 +38,7 @@ public class MemberService {
     public MemberResponse findById(UUID id) {
         return repository.findById(id)
                 .map(result -> mapper.map(result, MemberResponse.class))
-                .orElseThrow(() ->new EntityNotFoundException("Member" + NOT_FOUND + "id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Member" + NOT_FOUND + "id: " + id));
     }
 
     @Transactional(readOnly = true)
@@ -48,7 +48,8 @@ public class MemberService {
 
     @Transactional
     public String delete(UUID id) {
-        findById(id);
+        repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Member" + NOT_FOUND + "id: " + id));
         repository.deleteById(id);
         return "Member" + DELETE_MESSAGE;
     }

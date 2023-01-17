@@ -1,11 +1,12 @@
 package br.com.cooperative.models.request;
 
 
-import br.com.cooperative.models.entities.Role;
+import br.com.cooperative.models.entities.Cooperative;
+import br.com.cooperative.models.enums.RoleEnum;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Builder
@@ -15,14 +16,14 @@ import java.util.UUID;
 @Setter
 public class UserRequest implements  Serializable {
     private static final long serialVersionUID = 1L;
-
     private UUID id;
     private String userName;
     private String email;
     private String password;
+    private LocalDate birthday;
     private Boolean active;
     private String cpf;
-    private Set<Role> roles;
-    private CooperativeRequest cooperative;
     private String imageFileName;
+    private RoleEnum role;
+    private Cooperative cooperative;
 }

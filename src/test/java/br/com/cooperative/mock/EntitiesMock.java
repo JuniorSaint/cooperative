@@ -33,9 +33,9 @@ public interface EntitiesMock {
     User USER = User.builder().id(ID_EXIST).userName("Jose").email("junior@junior.com").password("123456").active(true).cpf("885.885.885-00")
             .cooperative(COOPERATIVE).birthday(date).build();
     UserRequest USER_REQUEST = UserRequest.builder().id(ID_EXIST).userName("Jose").email("junior@junior.com").password("123456").active(true).cpf("885.885.885-00")
-            .cooperative(COOPERATIVE_REQUEST).roles(Set.of(ROLE)).build();
+            .cooperative(COOPERATIVE).build();
     UserResponse USER_RESPONSE = UserResponse.builder().id(ID_EXIST).userName("Jose").email("junior@junior.com").active(true).cpf("885.885.885-00").birthday(date)
-            .cooperative(COOPERATIVE_RESPONSE).roles(Set.of(ROLE)).age(51).build();
+            .cooperative(COOPERATIVE_RESPONSE).build();
     Bank BANK = Bank.builder().code("5214").ispb("25456").cnpj("25.258.258/0001-20")
             .nameBank("Banco do Vaticano").url("vaticano@vaticano.com").build();
     Bank BANK_UPDATE = Bank.builder().id(ID_EXIST).code("5214").ispb("25456").cnpj("25.258.258/0001-20")

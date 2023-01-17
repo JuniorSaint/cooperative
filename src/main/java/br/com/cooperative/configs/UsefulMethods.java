@@ -31,7 +31,7 @@ public class UsefulMethods {
     }
 
     public String justNumberAllowed(String str) {
-        return str.replaceAll("\\d+", "");
+        return str.replaceAll("\\D", "");
     }
 
 }

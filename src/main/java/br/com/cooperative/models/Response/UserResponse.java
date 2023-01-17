@@ -1,14 +1,13 @@
 package br.com.cooperative.models.Response;
 
 
-import br.com.cooperative.models.entities.Role;
+import br.com.cooperative.models.enums.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Set;
 import java.util.UUID;
 
 @Builder
@@ -23,13 +22,12 @@ public class UserResponse implements Serializable {
     private UUID id;
     private String userName;
     private String email;
+    private LocalDate birthday;
     private Boolean active;
     private String cpf;
-    private LocalDate birthday;
-    private Set<Role> roles;
-    private CooperativeResponse cooperative;
-    private Integer age;
     private String imageFileName;
+    private RoleEnum role;
+    private CooperativeResponse cooperative;
 
 
     private Integer calculateAge(LocalDate birthday) {

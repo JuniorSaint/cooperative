@@ -74,7 +74,7 @@ class NotificationServiceTest {
     void saveShouldThrowExceptionBodyOfMessageIsNull() {
         notification.setBody(null);
         BadRequestException response = Assertions.assertThrows(BadRequestException.class, () -> {
-              service.save(notification);
+            service.save(notification);
         });
         Assertions.assertEquals(response.getMessage(), "The body of message is not allowed null");
         verify(repository, never()).save(notification);
@@ -137,10 +137,10 @@ class NotificationServiceTest {
                 .thenReturn(notificationPage);
         when(utils.mapEntityPageIntoDtoPage(any(), eq(NotificationResponse.class)))
                 .thenReturn(notificationPageResponse);
-        Page<NotificationResponse> responses = service.findAllWithPageAndSearch(ID_EXIST, true,date, date, pageable);
+        Page<NotificationResponse> responses = service.findAllWithPageAndSearch(ID_EXIST, true, date, date, pageable);
         Assertions.assertNotNull(responses);
         Assertions.assertEquals(1, responses.getTotalElements());
-        verify(repository).findNotificatioin(ID_EXIST, true,date, date, pageable);
+        verify(repository).findNotificatioin(ID_EXIST, true, date, date, pageable);
     }
 
     @Test
@@ -150,5 +150,17 @@ class NotificationServiceTest {
         when(repository.findById(any())).thenReturn(Optional.of(notification));
         Assertions.assertDoesNotThrow(() -> service.delete(any()));
         verify(repository).deleteById(any());
+    }
+
+    @Test
+    @DisplayName("Delete - Should throw EntityNotFoundException")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void deleteShouldThrowEntityNotFoundException() {
+        when(repository.findById(any())).thenReturn(Optional.empty());
+        EntityNotFoundException response = Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            service.delete(any());
+        });
+        Assertions.assertEquals(response.getClass(), EntityNotFoundException.class);
+        verify(repository, never()).deleteById(any());
     }
 }

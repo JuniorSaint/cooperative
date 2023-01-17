@@ -82,7 +82,7 @@ class UsersControllerTest {
     @DisplayName("Should fetch one user by id")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findById() throws Exception {
-        given(service.findById(any())).willReturn(user);
+        given(service.findById(any())).willReturn(userResponse);
         this.mockMvc
                 .perform(get(URL_BASIC + "/{id}", ID_EXIST))
                 .andDo(print())
@@ -95,7 +95,7 @@ class UsersControllerTest {
     @DisplayName("Should save a user with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void save() throws Exception {
-        given(service.save(any())).willReturn(userResponse);
+        given(service.save(user)).willReturn(userResponse);
         String jsonBody = new ObjectMapper().writeValueAsString(userRequest);
         ResultActions result =
                 mockMvc
@@ -108,7 +108,7 @@ class UsersControllerTest {
         result.andExpect(jsonPath("$").exists());
         result.andExpect(jsonPath("$.id").isNotEmpty());
         result.andExpect(jsonPath("$.userName").value("Jose"));
-        verify(service, times(1)).save(any());
+        verify(service, times(1)).save(user);
     }
 
     @Test

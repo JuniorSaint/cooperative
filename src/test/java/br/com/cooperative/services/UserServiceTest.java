@@ -72,38 +72,14 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("loadUserByUsername - Should return user detail with success")
-    @EnabledForJreRange(min = JRE.JAVA_17)
-    void loadUserByUsernameWithSuccess() {
-//        UserDetails userDetails = user;
-//        when(repository.findByEmail(anyString())).thenReturn(Optional.of(user));
-//        when(mapper.map(any(), any())).thenReturn(userDetails);
-//        UserDetails response = service.loadUserByUsername(anyString());
-//        Assertions.assertNotNull(response);
-//        Assertions.assertEquals(response.getUsername(), "Jose");
-    }
-
-    @Test
-    @DisplayName("loadUserByUsername - Should throw an exception EntityNotFoundException")
-    @EnabledForJreRange(min = JRE.JAVA_17)
-    void loadUserByUsernameShouldThrowEntityNotFoundException() {
-//        when(repository.findByEmail(any())).thenReturn(Optional.empty());
-//        Assertions.assertThrows(EntityNotFoundException.class, () -> {
-//            service.loadUserByUsername(any());
-//        });
-//        verify(repository, times(1)).findByEmail(any());
-    }
-
-    @Test
     @DisplayName("Save - Should throw BadRequestException when email already exist")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void saveShouldThrowExceptionIfEmailExist() {
-        when(repository.existsByEmail(any())).thenReturn(true);
+        when(repository.findById(any())).thenReturn(Optional.of(user));
         BadRequestException res = Assertions.assertThrows(BadRequestException.class, () -> service.save(user));
-        Assertions.assertEquals(res.getClass(), BadRequestException.class);
-        Assertions.assertEquals(res.getMessage(), "Already exist user with this email: " + user.getEmail() + ", try with another one");
+        Assertions.assertEquals(BadRequestException.class, res.getClass());
+        Assertions.assertEquals("Already exist user with this email: " + user.getEmail() + ", try with another one", res.getMessage());
     }
-
 
     @Test
     @DisplayName("Save - Should throw BadRequestException when cooperative is null")
@@ -113,19 +89,32 @@ class UserServiceTest {
         BadRequestException res = Assertions.assertThrows(BadRequestException.class, () -> {
             service.save(user);
         });
-        Assertions.assertEquals(res.getClass(), BadRequestException.class);
-        Assertions.assertEquals(res.getMessage(), "Cooperative not informed, it's not allowed user without a cooperative");
+        Assertions.assertEquals(BadRequestException.class, res.getClass());
+        Assertions.assertEquals("Cooperative not informed, it's not allowed user without a cooperative", res.getMessage());
+    }
+
+    @Test
+    @DisplayName("Save - Should throw EntityNotFoundException when cooperative not found")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void saveShouldThrowEntityNotFoundExceptionWhenCooperativeNotFound() {
+        user.setCooperative(cooperative);
+
+        EntityNotFoundException res = Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            service.save(user);
+        });
+        Assertions.assertEquals(EntityNotFoundException.class, res.getClass());
+        Assertions.assertEquals("Cooperative" + CP.NOT_FOUND + " id: " + cooperative.getId(), res.getMessage());
     }
 
     @Test
     @DisplayName("Save - Should save an user with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void saveShouldSaveWithSuccess() {
-        when(repository.existsByEmail(userRequest.getEmail())).thenReturn(false);
+        when(repository.findByEmail(userRequest.getEmail())).thenReturn(Optional.empty());
         user.setCooperative(COOPERATIVE);
         UserResponse response = service.save(user);
         Assertions.assertNotNull(response);
-        Assertions.assertEquals(response.getClass(), UserResponse.class);
+        Assertions.assertEquals(UserResponse.class, response.getClass());
         verify(repository, atLeastOnce()).save(user);
     }
 
@@ -135,7 +124,7 @@ class UserServiceTest {
     void updateShouldThrowExceptionIfEmailDontExist() {
         when(repository.findByEmail(any())).thenReturn(Optional.empty());
         EntityNotFoundException res = Assertions.assertThrows(EntityNotFoundException.class, () -> service.update(user));
-        Assertions.assertEquals(res.getMessage(), "User" + CP.NOT_FOUND + " email: " + userRequest.getEmail());
+        Assertions.assertEquals("User" + CP.NOT_FOUND + " email: " + userRequest.getEmail(), res.getMessage());
     }
 
 
@@ -148,8 +137,8 @@ class UserServiceTest {
         BadRequestException res = Assertions.assertThrows(BadRequestException.class, () -> {
             service.update(user);
         });
-        Assertions.assertEquals(res.getClass(), BadRequestException.class);
-        Assertions.assertEquals(res.getMessage(), "Cooperative not informed, it's not allowed user without a cooperative");
+        Assertions.assertEquals(BadRequestException.class, res.getClass());
+        Assertions.assertEquals("Cooperative not informed, it's not allowed user without a cooperative", res.getMessage());
     }
 
     @Test
@@ -161,7 +150,7 @@ class UserServiceTest {
         when(mapper.map(any(), any())).thenReturn(userResponse);
         UserResponse response = service.update(user);
         Assertions.assertNotNull(response);
-        Assertions.assertEquals(response.getClass(), UserResponse.class);
+        Assertions.assertEquals(UserResponse.class, response.getClass());
         verify(repository).save(any(User.class));
     }
 
@@ -188,6 +177,18 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("Delete - Should throw EntityNotFoundException")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void deleteShouldThrowEntityNotFoundException() {
+        when(repository.findById(any())).thenReturn(Optional.empty());
+        EntityNotFoundException response = Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            service.delete(any());
+        });
+        Assertions.assertEquals(EntityNotFoundException.class, response.getClass());
+        verify(repository, never()).deleteById(any());
+    }
+
+    @Test
     @DisplayName("FindById - Should throw an exception when try find by Id")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void findByIdThrowException() {
@@ -195,8 +196,8 @@ class UserServiceTest {
         EntityNotFoundException resp = Assertions.assertThrows(EntityNotFoundException.class, () -> {
             service.findById(ID_EXIST);
         });
-        Assertions.assertEquals(resp.getClass(), EntityNotFoundException.class);
-        Assertions.assertEquals(resp.getMessage(), "User" + CP.NOT_FOUND + " id:" + ID_EXIST);
+        Assertions.assertEquals(EntityNotFoundException.class, resp.getClass());
+        Assertions.assertEquals("User" + CP.NOT_FOUND + " id:" + ID_EXIST, resp.getMessage());
     }
 
     @Test
@@ -205,8 +206,8 @@ class UserServiceTest {
     void findByIdShouldReturnUserWithSuccess() {
         when(repository.findById(ID_EXIST)).thenReturn(Optional.of(user));
         when(mapper.map(any(), any())).thenReturn(userResponse);
-        User response = service.findById(ID_EXIST);
-        Assertions.assertEquals(response.getClass(), User.class);
+        UserResponse response = service.findById(ID_EXIST);
+        Assertions.assertEquals(UserResponse.class, response.getClass());
         Assertions.assertNotNull(response);
         verify(repository).findById(ID_EXIST);
     }
@@ -218,8 +219,8 @@ class UserServiceTest {
         when(repository.findBySearch(anyString(), eq(pageable))).thenReturn(userPage);
         when(utils.mapEntityPageIntoDtoPage(userPage, UserResponse.class)).thenReturn(userResponsePage);
         Page<UserResponse> responses = service.findAllWithPageAndSearch("Jose", pageable);
-        Assertions.assertEquals(responses.getTotalElements(), 1);
-        Assertions.assertEquals(responses.getSize(), 1);
+        Assertions.assertEquals(1, responses.getTotalElements());
+        Assertions.assertEquals(1, responses.getSize());
         verify(repository).findBySearch(anyString(), any(Pageable.class));
         verify(repository, times(1)).findBySearch(anyString(), any(Pageable.class));
     }
@@ -232,8 +233,9 @@ class UserServiceTest {
         when(utils.mapListIntoDtoList(userList, UserResponse.class)).thenReturn(userResponseList);
         List<UserResponse> response = service.findAllListed();
         Assertions.assertNotNull(response);
-        Assertions.assertEquals(response.size(), 1);
-        Assertions.assertEquals(response.get(0).getClass(), UserResponse.class);
+        Assertions.assertEquals(1, response.size());
+        Assertions.assertEquals(UserResponse.class, response.get(0).getClass());
         verify(repository, times(1)).findAll();
     }
+
 }

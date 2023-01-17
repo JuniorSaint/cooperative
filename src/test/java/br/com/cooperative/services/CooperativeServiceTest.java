@@ -70,16 +70,15 @@ class CooperativeServiceTest {
             service.saveUpdate(cooperativeBranch);
         });
         Assertions.assertEquals(response.getClass(), BadRequestException.class);
-      Assertions.assertEquals(response.getMessage(), "Matrix it's not allowed null, when is registering a branch");
+        Assertions.assertEquals(response.getMessage(), "Matrix it's not allowed null, when is registering a branch");
 
     }
 
     @Test
     @DisplayName("Save - Should throw a EntityNotFoundException when cooperative not found")
     @EnabledForJreRange(min = JRE.JAVA_17)
-    void saveShouldEntityNotFoundExceptionWhenCooperativeNotFound() {
-        when(repository.findById(any())).thenReturn(Optional.of(cooperativeBranch));
-        when(repository.findById(cooperativeBranch.getMatrix().getId())).thenReturn(Optional.empty());
+    void saveShouldThrowEntityNotFoundExceptionWhenCooperativeNotFound() {
+        when(repository.findById(any())).thenReturn(Optional.empty());
         EntityNotFoundException response = Assertions.assertThrows(EntityNotFoundException.class, () -> {
             service.saveUpdate(cooperativeBranch);
         });
@@ -126,6 +125,7 @@ class CooperativeServiceTest {
         Assertions.assertEquals(response.getClass(), CooperativeResponse.class);
         verify(repository, atLeastOnce()).save(cooperative);
     }
+
     @Test
     @DisplayName("FindById - Should throw an exception when try find by Id")
     @EnabledForJreRange(min = JRE.JAVA_17)
@@ -137,6 +137,7 @@ class CooperativeServiceTest {
         Assertions.assertEquals(resp.getClass(), EntityNotFoundException.class);
         Assertions.assertEquals(resp.getMessage(), "Cooperative" + NOT_FOUND + "id: " + ID_EXIST);
     }
+
     @Test
     @DisplayName("findAllListed - Should fetch listed all cooperatives with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
@@ -146,6 +147,7 @@ class CooperativeServiceTest {
         List<CooperativeResponse> response = service.findAll();
         verify(repository, times(1)).findAll();
     }
+
     @Test
     @DisplayName("Find all Pageable - Should fetch all pageable and filtered successfully")
     @EnabledForJreRange(min = JRE.JAVA_17)
@@ -162,7 +164,20 @@ class CooperativeServiceTest {
     @EnabledForJreRange(min = JRE.JAVA_17)
     void delete() {
         when(repository.findById(any())).thenReturn(Optional.of(cooperative));
-        Assertions.assertDoesNotThrow(() -> service.delete(any()));
+        String response = Assertions.assertDoesNotThrow(() -> service.delete(any()));
+        Assertions.assertNotNull(response);
         verify(repository, times(1)).deleteById(any());
+    }
+
+    @Test
+    @DisplayName("Delete - Should throw EntityNotFoundException")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void deleteShouldThrowEntityNotFoundException() {
+        when(repository.findById(any())).thenReturn(Optional.empty());
+        EntityNotFoundException response = Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            service.delete(any());
+        });
+        Assertions.assertEquals(response.getClass(), EntityNotFoundException.class);
+        verify(repository, never()).deleteById(any());
     }
 }

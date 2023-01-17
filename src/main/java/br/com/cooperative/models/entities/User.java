@@ -1,5 +1,6 @@
 package br.com.cooperative.models.entities;
 
+import br.com.cooperative.models.enums.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
@@ -13,8 +14,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
 @Builder
 @Entity
@@ -47,23 +49,17 @@ public class User implements UserDetails, Serializable {
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
-
 
     @ManyToOne
     @JoinColumn(name = "cooperative_id", nullable = false)
     private Cooperative cooperative;
 
+    @Enumerated(EnumType.STRING)
+    private RoleEnum role;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRole()))
-                .collect(Collectors.toSet());
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override

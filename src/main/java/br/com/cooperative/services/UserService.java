@@ -5,31 +5,32 @@ import br.com.cooperative.configs.UsefulMethods;
 import br.com.cooperative.exceptions.BadRequestException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.UserResponse;
+import br.com.cooperative.models.entities.Cooperative;
 import br.com.cooperative.models.entities.User;
+import br.com.cooperative.models.request.ChangePasswordRequest;
 import br.com.cooperative.repositories.CooperativeRepository;
+import br.com.cooperative.repositories.RoleRepository;
 import br.com.cooperative.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
+import static br.com.cooperative.configs.CP.NOT_FOUND;
 
 @Service
-public class UserService   {
+public class UserService {
     @Autowired
     private UserRepository repository;
     @Autowired
     private CooperativeRepository cooperativeRepository;
+    @Autowired
+    private RoleRepository roleRepository;
     @Autowired
     private ModelMapper mapper;
     @Autowired
@@ -40,72 +41,70 @@ public class UserService   {
     PasswordEncoder passwordEncoder;
 
     @Transactional
-    public UserResponse save(User entity, MultipartFile file) throws IOException {
-        if (repository.existsByEmail(entity.getEmail())) {
-            throw new BadRequestException(
-                    "Already exist user with this email: " + entity.getEmail() + ", try with another one");
+    public UserResponse save(User entity) {
+        entity.setEmail(entity.getEmail().toLowerCase());
+        if (repository.findByEmail(entity.getEmail()).isPresent()) {
+            throw new BadRequestException("Already exist user with this email: " + entity.getEmail() + ", try with another one");
         }
-        if (entity.getCooperative() == null) {
-            throw new BadRequestException("Cooperative not informed, it's not allowed user without a cooperative");
-        }
-        if(!file.isEmpty()){
-            fileStorageService.storageFile(file);
-            entity.setImageFileName(file.getOriginalFilename());
-        }
-        verifyIfCooperativeExist(entity.getCooperative().getId());
+        ifCooperativeExist(entity.getCooperative());
+        entity.setCpf(usefulMethods.justNumberAllowed(entity.getCpf()));
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
         return mapper.map(repository.save(entity), UserResponse.class);
     }
 
     @Transactional
-    public UserResponse update(User entity, MultipartFile file) throws IOException {
-        Optional<User> searchForUser = repository.findByEmail(entity.getEmail());
-        if (searchForUser.isEmpty()) {
-            throw new EntityNotFoundException("User" + CP.NOT_FOUND + " email: " + entity.getEmail());
-        }
-        if (entity.getCooperative() == null) {
-            throw new BadRequestException("Cooperative not informed, it's not allowed user without a cooperative");
-        }
-        if(!file.isEmpty()){
-            fileStorageService.storageFile(file);
-            entity.setImageFileName(file.getOriginalFilename());
-        }
-        verifyIfCooperativeExist(entity.getCooperative().getId());
-        entity.setPassword(searchForUser.get().getPassword());
-        return mapper.map(repository.save(entity), UserResponse.class);
+    public UserResponse update(User entity) {
+        ifCooperativeExist(entity.getCooperative());
+        entity.setEmail(entity.getEmail().toLowerCase());
+        return repository.findByEmail(entity.getEmail())
+                .map(result -> {
+                    entity.setCpf(usefulMethods.justNumberAllowed(entity.getCpf()));
+                    entity.setPassword(result.getPassword());
+                    return mapper.map(repository.save(entity), UserResponse.class);
+                })
+                .orElseThrow(
+                        () -> new EntityNotFoundException("User" + CP.NOT_FOUND + " id: " + entity.getEmail()));
     }
 
-//    public String changePassword(ChangePasswordRequest request) {
-//        User user = findById(request.getId());
-//        user.setPassword(passwordEncoder.encode(request.getPassword()));
-//        repository.save(user);
-//        return "The password was changed with success of the user: " + user.getEmail();
-//    }
+    public String changePassword(ChangePasswordRequest request) {
+        return repository.findById(request.getId())
+                .map(result -> {
+                    result.setPassword(passwordEncoder.encode(request.getPassword()));
+                    repository.save(result);
+                    return "The password was changed with success of the user: " + result.getEmail();
+                }).orElseThrow(
+                        () -> new EntityNotFoundException("User" + CP.NOT_FOUND + " id: " + request.getId()));
+    }
 
     @Transactional
     public String delete(UUID id) {
-        findById(id);
-        repository.deleteById(id);
-        return "User" + DELETE_MESSAGE;
+        return repository.findById(id)
+                .map(result -> {
+                    repository.deleteById(id);
+                    return "User" + DELETE_MESSAGE;
+                })
+                .orElseThrow(() -> new EntityNotFoundException("User" + NOT_FOUND + "id: " + id));
     }
 
-    public User findById(UUID id) {
+    public UserResponse findById(UUID id) {
         return repository.findById(id)
+                .map(result -> mapper.map(result, UserResponse.class))
                 .orElseThrow(() -> new EntityNotFoundException("User" + CP.NOT_FOUND + " id:" + id));
     }
 
-    public Page<UserResponse> findAllWithPageAndSearch(String search, Pageable pageable) {
-        return usefulMethods.mapEntityPageIntoDtoPage(repository.findBySearch(search.trim(), pageable), UserResponse.class);
-    }
+//    public Page<UserResponse> findAllWithPageAndSearch(String search, Pageable pageable) {
+//        return usefulMethods.mapEntityPageIntoDtoPage(repository.findBySearch(search.trim(), pageable), UserResponse.class);
+//    }
 
     public List<UserResponse> findAllListed() {
         return usefulMethods.mapListIntoDtoList(repository.findAll(), UserResponse.class);
     }
 
-    private boolean verifyIfCooperativeExist(UUID id) {
-        if (cooperativeRepository.findById(id).isPresent()) {
-            return true;
+    private void ifCooperativeExist(Cooperative cooperative) {
+        if (cooperative == null) {
+            throw new BadRequestException("Cooperative not informed, it's not allowed user without a cooperative");
         }
-        throw new EntityNotFoundException("Cooperative" + CP.NOT_FOUND + " id: " + id);
+        cooperativeRepository.findById(cooperative.getId()).orElseThrow(
+                () -> new EntityNotFoundException("Cooperative" + CP.NOT_FOUND + " id: " + cooperative.getId()));
     }
 }

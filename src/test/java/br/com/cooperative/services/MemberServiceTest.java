@@ -63,6 +63,7 @@ class MemberServiceTest {
         Assertions.assertNotNull(response);
         verify(repository, atLeastOnce()).save(member);
     }
+
     @Test
     @DisplayName("Update - Should update with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
@@ -118,7 +119,20 @@ class MemberServiceTest {
     @EnabledForJreRange(min = JRE.JAVA_17)
     void delete() {
         when(repository.findById(any())).thenReturn(Optional.of(member));
-        Assertions.assertDoesNotThrow(() -> service.delete(any()));
+        String response = Assertions.assertDoesNotThrow(() -> service.delete(any()));
+        Assertions.assertNotNull(response);
         verify(repository).deleteById(any());
+    }
+
+    @Test
+    @DisplayName("Delete - Should throw EntityNotFoundException")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void deleteShouldThrowEntityNotFoundException() {
+        when(repository.findById(any())).thenReturn(Optional.empty());
+        EntityNotFoundException response = Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            service.delete(any());
+        });
+        Assertions.assertEquals(response.getClass(), EntityNotFoundException.class);
+        verify(repository, never()).deleteById(any());
     }
 }
