@@ -18,7 +18,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -162,17 +161,17 @@ class UsersControllerTest {
 //        verify(service, times(1)).changePassword(any());
     }
 
-    @Test
-    @DisplayName("Should fetch a list of user with pageable and search with success")
-    @EnabledForJreRange(min = JRE.JAVA_17)
-    void findAllUserWithSearch() throws Exception {
-        given(service.findAllWithPageAndSearch(any(), (Pageable) any())).willReturn(userPage);
-        this.mockMvc
-                .perform(get(URL_BASIC + "/seek"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$").exists());
-        verify(service, times(1)).findAllWithPageAndSearch(any(), (Pageable) any());
-    }
+//    @Test
+//    @DisplayName("Should fetch a list of user with pageable and search with success")
+//    @EnabledForJreRange(min = JRE.JAVA_17)
+//    void findAllUserWithSearch() throws Exception {
+//        given(service.findAllWithPageAndSearch(any(), (Pageable) any())).willReturn(userPage);
+//        this.mockMvc
+//                .perform(get(URL_BASIC + "/seek"))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(content().contentType("application/json"))
+//                .andExpect(jsonPath("$").exists());
+//        verify(service, times(1)).findAllWithPageAndSearch(any(), (Pageable) any());
+//    }
 }

@@ -40,8 +40,9 @@ public class BankService {
     }
 
     @Transactional(readOnly = true)
-    public List<BankResponse> findAll() {
-        return usefulMethods.mapListIntoDtoList(repository.findAll(), BankResponse.class);
+    public List<Bank> findAllBanks() {
+        return repository.findAll();
+//        return usefulMethods.mapListIntoDtoList(repository.findAll(), BankResponse.class);
     }
 
     @Transactional

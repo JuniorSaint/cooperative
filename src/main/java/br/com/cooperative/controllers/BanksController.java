@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -43,11 +42,11 @@ public class BanksController {
                 .body(service.saveUpdate(mapper.map(request, Bank.class)));
     }
 
-    @GetMapping
-    public ResponseEntity<List<BankResponse>> findAll() {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(service.findAll());
-    }
+//    @GetMapping
+//    public ResponseEntity<List<BankResponse>> findAll() {
+//        return ResponseEntity.status(HttpStatus.OK)
+//                .body(service.findAll());
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<BankResponse> findById(@PathVariable(value = "id") UUID id) {

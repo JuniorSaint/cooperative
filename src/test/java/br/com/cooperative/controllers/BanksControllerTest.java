@@ -100,17 +100,17 @@ class BanksControllerTest {
         verify(service, times(1)).saveUpdate(any());
     }
 
-    @Test
-    @DisplayName("Should fetch all banks with success")
-    @EnabledForJreRange(min = JRE.JAVA_17)
-    void findAll() throws Exception{
-        given(service.findAll()).willReturn(List.of(bankResponse));
-        mockMvc.perform(get(URL_BASIC))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").exists())
-                .andExpect(jsonPath("$[0].id").isNotEmpty());
-    }
+//    @Test
+//    @DisplayName("Should fetch all banks with success")
+//    @EnabledForJreRange(min = JRE.JAVA_17)
+//    void findAll() throws Exception{
+//        given(service.findAll()).willReturn(List.of(bankResponse));
+//        mockMvc.perform(get(URL_BASIC))
+//                .andExpect(status().isOk())
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(jsonPath("$").exists())
+//                .andExpect(jsonPath("$[0].id").isNotEmpty());
+//    }
 
     @Test
     @DisplayName("Should fetch one bank by id")

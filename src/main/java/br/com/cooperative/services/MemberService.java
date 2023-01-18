@@ -48,9 +48,11 @@ public class MemberService {
 
     @Transactional
     public String delete(UUID id) {
-        repository.findById(id)
+        return repository.findById(id)
+                .map(result -> {
+                    repository.deleteById(id);
+                    return "Member" + DELETE_MESSAGE;
+                })
                 .orElseThrow(() -> new EntityNotFoundException("Member" + NOT_FOUND + "id: " + id));
-        repository.deleteById(id);
-        return "Member" + DELETE_MESSAGE;
     }
 }

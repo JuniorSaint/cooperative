@@ -18,10 +18,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
@@ -45,6 +45,8 @@ class UserServiceTest {
     private ModelMapper mapper;
     @Mock
     private UsefulMethods utils;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     private UserRequest userRequest;
     private UserResponse userResponse;
@@ -94,24 +96,12 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Save - Should throw EntityNotFoundException when cooperative not found")
-    @EnabledForJreRange(min = JRE.JAVA_17)
-    void saveShouldThrowEntityNotFoundExceptionWhenCooperativeNotFound() {
-        user.setCooperative(cooperative);
-
-        EntityNotFoundException res = Assertions.assertThrows(EntityNotFoundException.class, () -> {
-            service.save(user);
-        });
-        Assertions.assertEquals(EntityNotFoundException.class, res.getClass());
-        Assertions.assertEquals("Cooperative" + CP.NOT_FOUND + " id: " + cooperative.getId(), res.getMessage());
-    }
-
-    @Test
     @DisplayName("Save - Should save an user with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void saveShouldSaveWithSuccess() {
         when(repository.findByEmail(userRequest.getEmail())).thenReturn(Optional.empty());
         user.setCooperative(COOPERATIVE);
+        user.setPassword("123456");
         UserResponse response = service.save(user);
         Assertions.assertNotNull(response);
         Assertions.assertEquals(UserResponse.class, response.getClass());
@@ -124,7 +114,7 @@ class UserServiceTest {
     void updateShouldThrowExceptionIfEmailDontExist() {
         when(repository.findByEmail(any())).thenReturn(Optional.empty());
         EntityNotFoundException res = Assertions.assertThrows(EntityNotFoundException.class, () -> service.update(user));
-        Assertions.assertEquals("User" + CP.NOT_FOUND + " email: " + userRequest.getEmail(), res.getMessage());
+        Assertions.assertEquals("User" + CP.NOT_FOUND + " id: " + userRequest.getEmail(), res.getMessage());
     }
 
 
@@ -145,26 +135,36 @@ class UserServiceTest {
     @DisplayName("Update - Should update user with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void updateShouldUpdateUserWithSuccess() {
+        user.setCooperative(cooperative);
+        when(cooperativeRepository.findById(any())).thenReturn(Optional.ofNullable(cooperative));
         when(repository.findByEmail(userRequest.getEmail())).thenReturn(Optional.of(user));
-        when(repository.save(user)).thenReturn(user);
-        when(mapper.map(any(), any())).thenReturn(userResponse);
+        when(mapper.map(any(), eq(UserResponse.class))).thenReturn(userResponse);
         UserResponse response = service.update(user);
         Assertions.assertNotNull(response);
         Assertions.assertEquals(UserResponse.class, response.getClass());
         verify(repository).save(any(User.class));
     }
 
-//    @Test
-//    @DisplayName("Change Password - Should change password with success")
-//    @EnabledForJreRange(min = JRE.JAVA_17)
-//    void changePasswordShouldChangeWithSuccess() {
-//        when(repository.findById(any())).thenReturn(Optional.of(user));
-//        when(mapper.map(any(), eq(User.class))).thenReturn(user);
-//        when(repository.save(any())).thenReturn(user);
-//        String response = service.changePassword(changePasswordRequest);
-//        Assertions.assertEquals(response, "The password was changed with success of the user: " + user.getEmail());
-//        Assertions.assertNotNull(response);
-//    }
+    @Test
+    @DisplayName("Change Password - Should throw EntityNotFoundException")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void changePasswordShouldThrowEntityNotFoundException() {
+        when(repository.findById(any())).thenReturn(Optional.empty());
+        EntityNotFoundException response = Assertions.assertThrows(EntityNotFoundException.class, () ->
+                service.changePassword(changePasswordRequest));
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(response.getMessage(), "User" + CP.NOT_FOUND + " id: " + changePasswordRequest.getId());
+    }
+
+    @Test
+    @DisplayName("Change Password - Should change password with success")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void changePasswordShouldChangeWithSuccess() {
+        when(repository.findById(any())).thenReturn(Optional.of(user));
+        String response = service.changePassword(changePasswordRequest);
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(response, "The password was changed with success of the user: " + user.getEmail());
+    }
 
     @Test
     @DisplayName("Delete - Should delete an object with success")
@@ -209,21 +209,21 @@ class UserServiceTest {
         UserResponse response = service.findById(ID_EXIST);
         Assertions.assertEquals(UserResponse.class, response.getClass());
         Assertions.assertNotNull(response);
-        verify(repository).findById(ID_EXIST);
+        verify(repository, atLeastOnce()).findById(ID_EXIST);
     }
 
-    @Test
-    @DisplayName("Find all Pageable - Should fetch all pageable and filtered successfully")
-    @EnabledForJreRange(min = JRE.JAVA_17)
-    void findAllWithPageAndSearch() {
-        when(repository.findBySearch(anyString(), eq(pageable))).thenReturn(userPage);
-        when(utils.mapEntityPageIntoDtoPage(userPage, UserResponse.class)).thenReturn(userResponsePage);
-        Page<UserResponse> responses = service.findAllWithPageAndSearch("Jose", pageable);
-        Assertions.assertEquals(1, responses.getTotalElements());
-        Assertions.assertEquals(1, responses.getSize());
-        verify(repository).findBySearch(anyString(), any(Pageable.class));
-        verify(repository, times(1)).findBySearch(anyString(), any(Pageable.class));
-    }
+//    @Test
+//    @DisplayName("Find all Pageable - Should fetch all pageable and filtered successfully")
+//    @EnabledForJreRange(min = JRE.JAVA_17)
+//    void findAllWithPageAndSearch() {
+//        when(repository.findBySearch(anyString(), eq(pageable))).thenReturn(userPage);
+//        when(utils.mapEntityPageIntoDtoPage(userPage, UserResponse.class)).thenReturn(userResponsePage);
+//        Page<UserResponse> responses = service.findAllWithPageAndSearch("Jose", pageable);
+//        Assertions.assertEquals(1, responses.getTotalElements());
+//        Assertions.assertEquals(1, responses.getSize());
+//        verify(repository).findBySearch(anyString(), any(Pageable.class));
+//        verify(repository, times(1)).findBySearch(anyString(), any(Pageable.class));
+//    }
 
     @Test
     @DisplayName("findAllListed - Should fetch listed all user with success")

@@ -67,9 +67,11 @@ public class CooperativeService {
 
     @Transactional
     public String delete(UUID id) {
-        repository.findById(id)
+        return repository.findById(id)
+                .map(result -> {
+                    repository.deleteById(id);
+                    return "Cooperative" + DELETE_MESSAGE;
+                })
                 .orElseThrow(() -> new EntityNotFoundException("Cooperative" + NOT_FOUND + "id: " + id));
-        repository.deleteById(id);
-        return "Cooperative" + DELETE_MESSAGE;
     }
 }

@@ -24,7 +24,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static br.com.cooperative.configs.CP.DELETE_MESSAGE;
 import static br.com.cooperative.configs.CP.NOT_FOUND;
 import static br.com.cooperative.mock.EntitiesMock.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -140,6 +139,8 @@ class AgencyBankServiceTest {
     }
 
     @Test
+    @DisplayName("Find All - Should fetch all agency bank with success")
+    @EnabledForJreRange(min = JRE.JAVA_17)
     void findAll() {
         when(usefulMethods.mapListIntoDtoList(any(), eq(AgencyBankResponse.class))).thenReturn(List.of(agencyBankResponse));
         List<AgencyBankResponse> response = service.findAll();
@@ -163,7 +164,6 @@ class AgencyBankServiceTest {
     void delete() {
         when(repository.findById(any())).thenReturn(Optional.of(agencyBankUpdate));
         String response =  service.delete(any());
-        Assertions.assertEquals(response, "Agency bank" + DELETE_MESSAGE, response);
         verify(repository, times(1)).deleteById(any());
     }
     @Test

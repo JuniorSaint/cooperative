@@ -30,7 +30,7 @@ public interface EntitiesMock {
             .name("Cooperativa dos Produtores Rurais de Carandaí").cooperativeType(CooperativeTypeEnum.valueOf("MATRIX")).matrix(COOPERATIVE_REQUEST_BRANCH).build();
     CooperativeResponse COOPERATIVE_RESPONSE = CooperativeResponse.builder().id(ID_EXIST).address(new AddressResponse()).cnpj("25.258.258/0001-20").contact(new ContactResponse())
             .name("Cooperativa dos Produtores Rurais de Carandaí").cooperativeType(CooperativeTypeEnum.valueOf("MATRIX")).build();
-    User USER = User.builder().id(ID_EXIST).userName("Jose").email("junior@junior.com").password("123456").active(true).cpf("885.885.885-00")
+    User USER = User.builder().userName("Jose").email("junior@junior.com").password("123456").active(true).cpf("885.885.885-00")
             .cooperative(COOPERATIVE).birthday(date).build();
     UserRequest USER_REQUEST = UserRequest.builder().id(ID_EXIST).userName("Jose").email("junior@junior.com").password("123456").active(true).cpf("885.885.885-00")
             .cooperative(COOPERATIVE).build();

@@ -72,7 +72,7 @@ public class AgencyBankService {
     @Transactional
     public String delete(UUID id) {
         repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Bank" + NOT_FOUND + "id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Agency bank" + NOT_FOUND + "id: " + id));
         repository.deleteById(id);
         return "Bank" + DELETE_MESSAGE;
     }

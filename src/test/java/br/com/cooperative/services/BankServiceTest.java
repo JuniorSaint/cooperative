@@ -34,7 +34,7 @@ class BankServiceTest {
     @Mock
     private ModelMapper mapper;
     @Mock
-    private UsefulMethods utils;
+    private UsefulMethods usefulMethods;
     private Bank bank;
     private BankRequest bankRequest;
     private BankResponse bankResponse;
@@ -64,6 +64,16 @@ class BankServiceTest {
         verify(repository, times(1)).save(bankUpdate);
     }
 
+    @Test
+    @DisplayName("Save - Should save with success")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void saveShouldSaveWithSuccess() {
+        when(mapper.map(any(), eq(BankResponse.class))).thenReturn(bankResponse);
+        BankResponse response = service.saveUpdate(bank);
+        Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.getId());
+    }
+
 
     @Test
     @DisplayName("Find By Id - Should throw EntityNotFoundException")
@@ -91,15 +101,14 @@ class BankServiceTest {
     }
 
     @Test
+    @DisplayName("Find All - Should fetch all agency bank with success")
+    @EnabledForJreRange(min = JRE.JAVA_17)
     void findAll() {
-        when(repository.findAll()).thenReturn(listBank);
-        when(utils.mapListIntoDtoList(listBank, BankResponse.class)).thenReturn(bankResponseList);
-        List<BankResponse> responses = service.findAll();
-        Assertions.assertNotNull(responses);
-        Assertions.assertNotNull(responses.get(0).getId());
-        Assertions.assertEquals(responses.get(0).getClass(), BankResponse.class);
-        verify(repository, times(1)).findAll();
+        when(repository.findAll()).thenReturn(List.of(bankUpdate));
+        List<Bank> response = service.findAllBanks();
+        Assertions.assertNotNull(response);
     }
+
     @Test
     @DisplayName("Delete - Should throw EntityNotFoundException")
     @EnabledForJreRange(min = JRE.JAVA_17)
@@ -108,7 +117,7 @@ class BankServiceTest {
         EntityNotFoundException response = Assertions.assertThrows(EntityNotFoundException.class, () -> {
             service.delete(any());
         });
-        Assertions.assertEquals(response.getClass(),EntityNotFoundException.class);
+        Assertions.assertEquals(response.getClass(), EntityNotFoundException.class);
         verify(repository, never()).deleteById(any());
     }
 

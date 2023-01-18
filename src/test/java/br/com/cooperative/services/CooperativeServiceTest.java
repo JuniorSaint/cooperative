@@ -71,7 +71,6 @@ class CooperativeServiceTest {
         });
         Assertions.assertEquals(response.getClass(), BadRequestException.class);
         Assertions.assertEquals(response.getMessage(), "Matrix it's not allowed null, when is registering a branch");
-
     }
 
     @Test
@@ -82,7 +81,7 @@ class CooperativeServiceTest {
         EntityNotFoundException response = Assertions.assertThrows(EntityNotFoundException.class, () -> {
             service.saveUpdate(cooperativeBranch);
         });
-        Assertions.assertEquals(response.getMessage(), "Matrix" + NOT_FOUND + " id: " + cooperativeBranch.getMatrix().getId());
+        Assertions.assertEquals( "Matrix" + NOT_FOUND + " id: " + cooperativeBranch.getMatrix().getId(), response.getMessage());
         verify(repository, never()).save(cooperativeBranch);
     }
 
