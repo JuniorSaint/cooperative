@@ -132,7 +132,7 @@ class AgencyBankServiceTest {
     @Test
     @DisplayName("Find By Id - Should fetch an agency bank with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
-    void findByIdFetchWithSuccess() {
+    void findByIdShouldFetchWithSuccess() {
         when(repository.findById(any())).thenReturn(Optional.of(agencyBankUpdate));
         AgencyBankResponse response = service.findById(any());
         Assertions.assertNotNull(response.getId());
@@ -141,7 +141,7 @@ class AgencyBankServiceTest {
     @Test
     @DisplayName("Find All - Should fetch all agency bank with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
-    void findAll() {
+    void findAllShoulFetchAllAgencyBankWithSuccess() {
         when(usefulMethods.mapListIntoDtoList(any(), eq(AgencyBankResponse.class))).thenReturn(List.of(agencyBankResponse));
         List<AgencyBankResponse> response = service.findAll();
         Assertions.assertNotNull(response);
@@ -149,6 +149,8 @@ class AgencyBankServiceTest {
     }
 
     @Test
+    @DisplayName("Find All With Page And Search- Should fetch agency bank pageable and filtered")
+    @EnabledForJreRange(min = JRE.JAVA_17)
     void findAllWithPageAndSearch() {
         when(repository.findBySearch(anyString(), eq(pageable))).thenReturn(agencyBankPage);
         when(usefulMethods.mapEntityPageIntoDtoPage(agencyBankPage, AgencyBankResponse.class)).thenReturn(agencyBankResponsePage);
@@ -161,7 +163,7 @@ class AgencyBankServiceTest {
     @Test
     @DisplayName("Delete - Should delete an object with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
-    void delete() {
+    void deleteShouldDeleteWithSuccess() {
         when(repository.findById(any())).thenReturn(Optional.of(agencyBankUpdate));
         String response =  service.delete(any());
         verify(repository, times(1)).deleteById(any());

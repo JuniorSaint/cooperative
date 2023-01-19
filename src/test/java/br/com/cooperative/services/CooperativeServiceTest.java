@@ -5,6 +5,7 @@ import br.com.cooperative.exceptions.BadRequestException;
 import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.CooperativeResponse;
 import br.com.cooperative.models.entities.Cooperative;
+import br.com.cooperative.models.enums.CooperativeTypeEnum;
 import br.com.cooperative.models.request.CooperativeRequest;
 import br.com.cooperative.repositories.CooperativeRepository;
 import org.junit.jupiter.api.*;
@@ -77,25 +78,26 @@ class CooperativeServiceTest {
     @DisplayName("Save - Should throw a EntityNotFoundException when cooperative not found")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void saveShouldThrowEntityNotFoundExceptionWhenCooperativeNotFound() {
+        cooperativeBranch.setId(null);
         when(repository.findById(any())).thenReturn(Optional.empty());
         EntityNotFoundException response = Assertions.assertThrows(EntityNotFoundException.class, () -> {
             service.saveUpdate(cooperativeBranch);
         });
-        Assertions.assertEquals( "Matrix" + NOT_FOUND + " id: " + cooperativeBranch.getMatrix().getId(), response.getMessage());
+        Assertions.assertEquals("Matrix" + NOT_FOUND + " id: " + cooperativeBranch.getMatrix().getId(), response.getMessage());
         verify(repository, never()).save(cooperativeBranch);
     }
 
     @Test
-    @DisplayName("Save - Should throw a EntityNotFoundException when cooperative not found")
+    @DisplayName("Save - Should throw a BadRequestException when cooperative equal Branch")
     @EnabledForJreRange(min = JRE.JAVA_17)
-    void saveShouldThrowBadRequestExceptionWhenMatrixEqualBranch() {
-        when(repository.findById(any())).thenReturn(Optional.of(cooperativeBranch));
-        when(repository.findById(cooperativeBranch.getMatrix().getId())).thenReturn(Optional.of(cooperativeBranch));
-
+    void saveShouldThrowBadRequestExceptionWhenCooperativeEqualBranch() {
+        cooperativeBranch.setId(null);
+        when(repository.findById(any())).thenReturn(Optional.ofNullable(cooperative));
+        cooperative.setCooperativeType(CooperativeTypeEnum.valueOf("BRANCH"));
         BadRequestException response = Assertions.assertThrows(BadRequestException.class, () -> {
             service.saveUpdate(cooperativeBranch);
         });
-        Assertions.assertEquals(response.getMessage(), "The matrix that you're trying to register is a branch. - Branch");
+        Assertions.assertEquals("The matrix that you're trying to register is a branch.", response.getMessage());
         verify(repository, never()).save(cooperativeBranch);
     }
 
@@ -103,8 +105,9 @@ class CooperativeServiceTest {
     @DisplayName("Save - Should save a cooperative with success Branch")
     @EnabledForJreRange(min = JRE.JAVA_17)
     void saveShouldSaveWithSuccessBranch() {
-        when(repository.findById(any())).thenReturn(Optional.of(cooperativeBranch));
+        cooperativeBranch.setId(null);
         when(repository.findById(any())).thenReturn(Optional.of(cooperative));
+        cooperative.setCooperativeType(CooperativeTypeEnum.valueOf("MATRIX"));
         cooperativeBranch.setMatrix(cooperative);
         when(mapper.map(any(), eq(CooperativeResponse.class))).thenReturn(cooperativeResponse);
         CooperativeResponse response = service.saveUpdate(cooperativeBranch);
@@ -135,6 +138,17 @@ class CooperativeServiceTest {
         });
         Assertions.assertEquals(resp.getClass(), EntityNotFoundException.class);
         Assertions.assertEquals(resp.getMessage(), "Cooperative" + NOT_FOUND + "id: " + ID_EXIST);
+    }
+
+    @Test
+    @DisplayName("FindById - Should fetch a cooperative with success")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void findByIdShouldFetchACooperativeWithSuccess() {
+        when(repository.findById(any())).thenReturn(Optional.of(cooperative));
+        when(mapper.map(any(), eq(CooperativeResponse.class))).thenReturn(cooperativeResponse);
+        CooperativeResponse response = service.findById(any());
+        Assertions.assertNotNull(response);
+        verify(repository, atLeastOnce()).findById(any());
     }
 
     @Test

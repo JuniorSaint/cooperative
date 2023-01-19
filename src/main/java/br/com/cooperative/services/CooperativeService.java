@@ -30,9 +30,8 @@ public class CooperativeService {
 
     @Transactional
     public CooperativeResponse saveUpdate(Cooperative entity) {
-        if (entity.getId() != null) {
-            findById(entity.getId());
-        }
+       CooperativeResponse testIfCooperativeExist = entity.getId() != null ? findById(entity.getId()) : null;
+
         if (entity.getCooperativeType().toString().equals("BRANCH")) {
             if (entity.getMatrix() == null) {
                 throw new BadRequestException("Matrix it's not allowed null, when is registering a branch");
@@ -41,7 +40,7 @@ public class CooperativeService {
                     .orElseThrow(() -> new EntityNotFoundException("Matrix" + NOT_FOUND + " id: " + entity.getMatrix().getId()));
 
             if (responseCooperative.getCooperativeType().toString().equals("BRANCH")) {
-                throw new BadRequestException("The matrix that you're trying to register is a branch. - " + responseCooperative.getName());
+                throw new BadRequestException("The matrix that you're trying to register is a branch." );
             }
             entity.setMatrix(responseCooperative);
         }

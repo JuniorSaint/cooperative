@@ -25,6 +25,8 @@ public class Cooperative implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private String name;
+    @Enumerated(EnumType.STRING)
+    @NotBlank(message = "Cooperative type is a mandatory field")
     private CooperativeTypeEnum cooperativeType;
     @NotBlank(message = "Cnpj is a mandatory field")
     @Column(unique = true)

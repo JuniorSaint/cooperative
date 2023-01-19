@@ -23,7 +23,7 @@ public interface EntitiesMock {
 
     RoleResponse ROLE_RESPONSE = RoleResponse.builder().id(ID_EXIST).role("ADMIN").build();
     CooperativeRequest COOPERATIVE_REQUEST_BRANCH = CooperativeRequest.builder().id(ID_NO_EXIST).build();
-    Cooperative COOPERATIVE = Cooperative.builder().id(ID_EXIST).address(new Address()).cnpj("25.258.258/0001-20").contact(new Contact())
+    Cooperative COOPERATIVE = Cooperative.builder().address(new Address()).cnpj("25.258.258/0001-20").contact(new Contact())
             .name("Cooperativa dos Produtores Rurais de Carandaí").cooperativeType(CooperativeTypeEnum.valueOf("MATRIX")).build();
     Cooperative COOPERATIVE_BRANCH = Cooperative.builder().id(ID_NO_EXIST).cooperativeType(CooperativeTypeEnum.valueOf("BRANCH")).name("Branch").matrix(COOPERATIVE).build();
     CooperativeRequest COOPERATIVE_REQUEST = CooperativeRequest.builder().id(ID_EXIST).address(new Address()).cnpj("25.258.258/0001-20").contact(new Contact())
@@ -64,4 +64,6 @@ public interface EntitiesMock {
             .cooperative(COOPERATIVE_RESPONSE).father("João Ninguém").nacionality("Brasileira").contact(CONTACT).build();
     MemberRequest MEMBER_REQUEST = MemberRequest.builder().id(ID_EXIST).name("John Doe").cpfCnpj("888.222.555-22").address(ADDRESS)
             .cooperative(COOPERATIVE_REQUEST).father("João Ninguém").nacionality("Brasileira").contact(CONTACT).build();
+    AuthenticationRequest AUTHENTICATION_REQUEST = AuthenticationRequest.builder().email("junior@junior.com").password("123456").build();
+    AuthenticationResponse AUTHENTICATION_RESPONSE = AuthenticationResponse.builder().token("").build();
 }

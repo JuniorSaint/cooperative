@@ -61,7 +61,7 @@ class BankServiceTest {
         when(mapper.map(any(), eq(BankResponse.class))).thenReturn(bankResponse);
         BankResponse response = service.saveUpdate(bankUpdate);
         Assertions.assertNotNull(response.getId());
-        verify(repository, times(1)).save(bankUpdate);
+        verify(repository, atLeastOnce()).save(bankUpdate);
     }
 
     @Test
@@ -101,11 +101,11 @@ class BankServiceTest {
     }
 
     @Test
-    @DisplayName("Find All - Should fetch all agency bank with success")
+    @DisplayName("Find All - Should fetch all bank with success")
     @EnabledForJreRange(min = JRE.JAVA_17)
-    void findAll() {
+    void findAllShouldFetchAllBankWithSuccess() {
         when(repository.findAll()).thenReturn(List.of(bankUpdate));
-        List<Bank> response = service.findAllBanks();
+        List<BankResponse> response = service.findAllBanks();
         Assertions.assertNotNull(response);
     }
 

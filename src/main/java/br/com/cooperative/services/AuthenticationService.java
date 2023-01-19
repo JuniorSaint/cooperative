@@ -1,6 +1,7 @@
 package br.com.cooperative.services;
 
 import br.com.cooperative.configs.security.JwtService;
+import br.com.cooperative.exceptions.EntityNotFoundException;
 import br.com.cooperative.models.Response.AuthenticationResponse;
 import br.com.cooperative.models.request.AuthenticationRequest;
 import br.com.cooperative.repositories.UserRepository;
@@ -26,11 +27,13 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
-        var user = repository.findByEmail(request.getEmail())
-                .orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
-                .token(jwtToken)
+                .token(generateTheToken(request.getEmail()))
                 .build();
+    }
+    private String generateTheToken(String email){
+        return repository.findByEmail(email)
+                .map(result -> jwtService.generateToken(result))
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
     }
 }
